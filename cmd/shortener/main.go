@@ -30,27 +30,28 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Header.Get("Content-Type") != "text/plain" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	//if r.Header.Get("Content-Type") != "text/plain" {
+	//	w.WriteHeader(http.StatusBadRequest)
+	//	return
+	//}
 
 	w.Header().Set("Content-Type", "text/plain")
 
 	if r.Method == http.MethodPost {
-		urlBytes, err := io.ReadAll(r.Body)
+		urlBytes, _ := io.ReadAll(r.Body)
 		fmt.Println("string(urlBytes) = ", string(urlBytes))
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		if len(urlBytes) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		urlMap[hash(string(urlBytes))] = string(urlBytes)
+		//if err != nil {
+		//	w.WriteHeader(http.StatusBadRequest)
+		//	return
+		//}
+		//if len(urlBytes) == 0 {
+		//	w.WriteHeader(http.StatusBadRequest)
+		//	return
+		//}
+		key := hash(string(urlBytes))
+		urlMap[key] = string(urlBytes)
 		w.WriteHeader(http.StatusCreated)
-		newUrl := "http://localhost:8080/" + hash(string(urlBytes))
+		newUrl := "http://localhost:8080/" + key
 		fmt.Println("newUrl = ", newUrl)
 		w.Write([]byte(newUrl))
 		return
@@ -59,12 +60,13 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		urlstr := strings.TrimPrefix(r.URL.Path, "/")
 		fmt.Println("urlstr =", urlstr)
-		if len(urlstr) == 0 {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+		//if len(urlstr) == 0 {
+		//	w.WriteHeader(http.StatusBadRequest)
+		//	return
+		//}
 
 		url, exists := urlMap[urlstr]
+		fmt.Println("exists = ", exists)
 
 		if !exists {
 			w.WriteHeader(http.StatusBadRequest)
@@ -74,7 +76,6 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("url = ", url)
 		w.Header().Set("Location", url)
 		w.WriteHeader(http.StatusTemporaryRedirect)
-
 	}
 }
 
