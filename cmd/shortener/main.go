@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var urlMap map[string]string
+var urlmap map[string]string
 
 func hash(s string) string {
 	h := fnv.New32a()
@@ -49,11 +49,11 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		//	return
 		//}
 		key := hash(string(urlBytes))
-		urlMap[key] = string(urlBytes)
+		urlmap[key] = string(urlBytes)
 		w.WriteHeader(http.StatusCreated)
-		newUrl := "http://localhost:8080/" + key
-		fmt.Println("newUrl = ", newUrl)
-		w.Write([]byte(newUrl))
+		newurl := "http://localhost:8080/" + key
+		fmt.Println("newurl = ", newurl)
+		w.Write([]byte(newurl))
 		return
 	}
 
@@ -65,7 +65,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		//	return
 		//}
 
-		url, exists := urlMap[urlstr]
+		url, exists := urlmap[urlstr]
 		fmt.Println("exists = ", exists)
 
 		if !exists {
@@ -80,7 +80,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	urlMap = make(map[string]string)
+	urlmap = make(map[string]string)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handle)
 	fmt.Println("Listening on :8080")
