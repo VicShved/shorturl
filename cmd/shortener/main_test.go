@@ -53,6 +53,12 @@ func TestShortener(t *testing.T) {
 			w := httptest.NewRecorder()
 			HandlePOST(w, request)
 			res := w.Result()
+			//defer func(Body io.ReadCloser) {
+			//	err := Body.Close()
+			//	assert.Nil(t, err)
+			//}(res.Body)
+			err := res.Body.Close()
+			assert.Nil(t, err)
 			assert.Equal(t, test.want.status, res.StatusCode)
 			body, err := io.ReadAll(res.Body)
 			require.NoError(t, err)
