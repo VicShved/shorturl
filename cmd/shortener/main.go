@@ -22,7 +22,7 @@ func HandlePOST(w http.ResponseWriter, r *http.Request) {
 	//}
 
 	w.Header().Set("Content-Type", "text/plain")
-
+	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	fmt.Println("string(urlBytes) = ", string(urlBytes))
 	//if err != nil {
