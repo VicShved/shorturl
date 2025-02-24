@@ -45,13 +45,12 @@ func TestShortener(t *testing.T) {
 			},
 		},
 	}
-	urlmap = make(map[string]string)
 	localurl := "http://localhost:8080/"
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
 			w := httptest.NewRecorder()
-			HandlePOST(w, request)
+			app.HandlePOST(w, request)
 			res := w.Result()
 			//defer func(Body io.ReadCloser) {
 			//	err := Body.Close()
