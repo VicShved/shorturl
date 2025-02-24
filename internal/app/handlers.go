@@ -2,9 +2,9 @@ package app
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
-	"strings"
 )
 
 func HandlePOST(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +46,8 @@ func HandleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	urlstr := strings.TrimPrefix(r.URL.Path, "/")
+	//urlstr := strings.TrimPrefix(r.URL.Path, "/")
+	urlstr := chi.URLParam(r, "key")
 	fmt.Println("urlstr =", urlstr)
 	//if len(urlstr) == 0 {
 	//	w.WriteHeader(http.StatusBadRequest)

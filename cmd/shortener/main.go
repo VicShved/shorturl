@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
@@ -66,11 +67,15 @@ import (
 //}
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("POST /", app.HandlePOST)
-	mux.HandleFunc("GET /", app.HandleGET)
+	router := chi.NewRouter()
+	router.Post("/", app.HandlePOST)
+	router.Get("/{key}", app.HandleGET)
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("POST /", app.HandlePOST)
+	//mux.HandleFunc("GET /", app.HandleGET)
 	fmt.Println("Listening on :8080")
-	err := http.ListenAndServe(`localhost:8080`, mux)
+	//err := http.ListenAndServe(`localhost:8080`, mux)
+	err := http.ListenAndServe(`localhost:8080`, router)
 	if err != nil {
 		panic(err)
 	}
