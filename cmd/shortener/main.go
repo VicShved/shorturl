@@ -108,7 +108,6 @@ func handlePOST(w http.ResponseWriter, r *http.Request) {
 	newurl := "http://localhost:8080/" + key
 	fmt.Println("newurl = ", newurl)
 	w.Write([]byte(newurl))
-	return
 }
 
 func handleGET(w http.ResponseWriter, r *http.Request) {
