@@ -73,9 +73,12 @@ func main() {
 	//mux := http.NewServeMux()
 	//mux.HandleFunc("POST /", app.HandlePOST)
 	//mux.HandleFunc("GET /", app.HandleGET)
-	fmt.Println("Listening on :8080")
+	var config = app.InitServerConfig()
+	fmt.Println("Start URL=", config.StartBaseURL)
+	fmt.Println("Result URL=", config.ResultBaseURL)
+
 	//err := http.ListenAndServe(`localhost:8080`, mux)
-	err := http.ListenAndServe(`localhost:8080`, router)
+	err := http.ListenAndServe(config.StartBaseURL, router)
 	if err != nil {
 		panic(err)
 	}
