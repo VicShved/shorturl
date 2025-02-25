@@ -61,7 +61,7 @@ func TestShortener(t *testing.T) {
 			assert.Equal(t, test.want.status, res.StatusCode)
 			body, err := io.ReadAll(res.Body)
 			require.NoError(t, err)
-			assert.Equal(t, localurl+app.Hash(test.url), string(body))
+			assert.Equal(t, localurl+"/"+app.Hash(test.url), string(body))
 			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
 		})
 	}
