@@ -45,7 +45,7 @@ func TestShortener(t *testing.T) {
 			},
 		},
 	}
-	localurl := "http://localhost:8080/"
+	localurl := app.InitServerConfig().ResultBaseURL
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
