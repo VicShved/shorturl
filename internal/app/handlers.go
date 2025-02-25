@@ -34,7 +34,7 @@ func HandlePOST(w http.ResponseWriter, r *http.Request) {
 	key := Hash(string(urlBytes))
 	urlmap[key] = string(urlBytes)
 	w.WriteHeader(http.StatusCreated)
-	newurl := ServerConfig.ResultBaseURL + "/" + key
+	newurl := ServerConfig.BaseURL + "/" + key
 	fmt.Println("newurl = ", newurl)
 	w.Write([]byte(newurl))
 }
