@@ -9,28 +9,16 @@ import (
 
 func HandlePOST(w http.ResponseWriter, r *http.Request) {
 	urlmap := *GetStorage()
+
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	//if r.Header.Get("Content-Type") != "text/plain" {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	return
-	//}
-
 	w.Header().Set("Content-Type", "text/plain")
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	fmt.Println("string(urlBytes) = ", string(urlBytes))
-	//if err != nil {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	return
-	//}
-	//if len(urlBytes) == 0 {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	return
-	//}
 	key := Hash(string(urlBytes))
 	urlmap[key] = string(urlBytes)
 	w.WriteHeader(http.StatusCreated)
@@ -41,6 +29,7 @@ func HandlePOST(w http.ResponseWriter, r *http.Request) {
 
 func HandleGET(w http.ResponseWriter, r *http.Request) {
 	urlmap := *GetStorage()
+
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
 		return

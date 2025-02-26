@@ -48,6 +48,7 @@ func TestPost(t *testing.T) {
 			},
 		},
 	}
+
 	app.ServerConfig.BaseURL = "http://localhost:8080"
 	baseurl := app.ServerConfig.BaseURL
 	for _, test := range tests {
@@ -98,7 +99,7 @@ func TestGet(t *testing.T) {
 			},
 		},
 	}
-	//serveraddress := app.ServerConfig.ServerAddress
+
 	urlmap := *app.GetStorage()
 	for _, test := range tests {
 		urlmap[test.suffics] = test.want.locationheader
