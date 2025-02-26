@@ -46,13 +46,8 @@ func HandleGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//urlstr := strings.TrimPrefix(r.URL.Path, "/")
 	urlstr := chi.URLParam(r, "key")
 	fmt.Println("urlstr =", urlstr)
-	//if len(urlstr) == 0 {
-	//	w.WriteHeader(http.StatusBadRequest)
-	//	return
-	//}
 
 	url, exists := urlmap[urlstr]
 	fmt.Println("exists = ", exists)
