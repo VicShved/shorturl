@@ -98,11 +98,22 @@ func TestGet(t *testing.T) {
 				locationheader: "https://google.com/",
 			},
 		},
+		{
+			name:    "null in key",
+			method:  http.MethodGet,
+			suffics: "",
+			want: want{
+				status:         400,
+				locationheader: "https://google.com/",
+			},
+		},
 	}
 
 	urlmap := *app.GetStorage()
 	for _, test := range tests {
-		urlmap[test.suffics] = test.want.locationheader
+		if test.suffics != "" {
+			urlmap[test.suffics] = test.want.locationheader
+		}
 		t.Run(test.name, func(t *testing.T) {
 			target := "/{key}"
 			fmt.Println("target", target)
@@ -118,7 +129,9 @@ func TestGet(t *testing.T) {
 			err := res.Body.Close()
 			assert.Nil(t, err)
 			assert.Equal(t, test.want.status, res.StatusCode)
-			assert.Equal(t, test.want.locationheader, res.Header.Get("Location"))
+			if test.suffics != "" {
+				assert.Equal(t, test.want.locationheader, res.Header.Get("Location"))
+			}
 		})
 	}
 }
