@@ -10,11 +10,6 @@ import (
 func HandlePOST(w http.ResponseWriter, r *http.Request) {
 	urlmap := *GetStorage()
 
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
 	w.Header().Set("Content-Type", "text/plain")
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
@@ -29,11 +24,6 @@ func HandlePOST(w http.ResponseWriter, r *http.Request) {
 
 func HandleGET(w http.ResponseWriter, r *http.Request) {
 	urlmap := *GetStorage()
-
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	urlstr := chi.URLParam(r, "key")
 	fmt.Println("urlstr =", urlstr)
