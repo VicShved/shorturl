@@ -45,7 +45,7 @@ func (r *loggingResponseWriter) WriteHeader(status int) {
 	r.responseData.status = status
 }
 
-func AddLogging(handler http.Handler) http.Handler {
+func AddLogging(handler http.HandlerFunc) http.HandlerFunc {
 
 	logFn := func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
