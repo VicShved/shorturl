@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
+	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 
 func main() {
+	logger.Initialize("INFO")
 	router := chi.NewRouter()
-	router.Post("/", app.HandlePOST)
-	router.Get("/{key}", app.HandleGET)
+	router.Post("/", logger.AddLogging(app.HandlePOST))
+	router.Get("/{key}", logger.AddLogging(app.HandleGET))
 
 	var config = app.InitServerConfig()
 
