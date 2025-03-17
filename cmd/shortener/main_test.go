@@ -141,7 +141,7 @@ func TestGet(t *testing.T) {
 func TestPostJSON(t *testing.T) {
 
 	type body struct {
-		Url string `json:"url"`
+		URL string `json:"url"`
 	}
 	type want struct {
 		status int
@@ -157,7 +157,7 @@ func TestPostJSON(t *testing.T) {
 		{
 			name:   "testPostJSON1",
 			method: http.MethodPost,
-			url:    body{Url: "https://google.com"},
+			url:    body{URL: "https://google.com"},
 			want: want{
 				status:      201,
 				contentType: "application/json",
@@ -166,7 +166,7 @@ func TestPostJSON(t *testing.T) {
 		{
 			name:   "testPostJSON2",
 			method: http.MethodPost,
-			url:    body{Url: "https://rbc.ru/"},
+			url:    body{URL: "https://rbc.ru/"},
 
 			want: want{
 				status:      201,
@@ -198,7 +198,7 @@ func TestPostJSON(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			resulturl := baseurl + "/" + app.Hash(test.url.Url)
+			resulturl := baseurl + "/" + app.Hash(test.url.URL)
 			assert.Equal(t, resulturl, resdata.Result)
 			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
 		})
