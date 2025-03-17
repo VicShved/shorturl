@@ -45,7 +45,7 @@ func HandleGET(w http.ResponseWriter, r *http.Request) {
 
 func HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	type inJSON struct {
-		Url string `json:"url"`
+		URL string `json:"url"`
 	}
 	var indata inJSON
 	type outJSON struct {
@@ -60,8 +60,8 @@ func HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	key := Hash(indata.Url)
-	urlmap[key] = string(indata.Url)
+	key := Hash(indata.URL)
+	urlmap[key] = string(indata.URL)
 	w.WriteHeader(http.StatusCreated)
 	newurl := ServerConfig.BaseURL + "/" + key
 	fmt.Println("newurl = ", newurl)
