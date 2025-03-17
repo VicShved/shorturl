@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/go-chi/chi/v5"
@@ -132,6 +134,73 @@ func TestGet(t *testing.T) {
 			if test.suffics != "" {
 				assert.Equal(t, test.want.locationheader, res.Header.Get("Location"))
 			}
+		})
+	}
+}
+
+func TestPostJSON(t *testing.T) {
+
+	type body struct {
+		Url string `json:"url"`
+	}
+	type want struct {
+		status int
+		//response    string
+		contentType string
+	}
+	var tests = []struct {
+		name   string
+		method string
+		url    body
+		want   want
+	}{
+		{
+			name:   "testPostJSON1",
+			method: http.MethodPost,
+			url:    body{Url: "https://google.com"},
+			want: want{
+				status:      201,
+				contentType: "application/json",
+			},
+		},
+		{
+			name:   "testPostJSON2",
+			method: http.MethodPost,
+			url:    body{Url: "https://rbc.ru/"},
+
+			want: want{
+				status:      201,
+				contentType: "application/json",
+			},
+		},
+	}
+	type resJSON struct {
+		Result string `json:"result"`
+	}
+	var resdata resJSON
+	app.ServerConfig.BaseURL = "http://localhost:8080"
+	baseurl := app.ServerConfig.BaseURL
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bbuf, _ := json.Marshal(test.url)
+			iobbuf := bytes.NewReader([]byte(bbuf))
+			request := httptest.NewRequest(test.method, "/api/shorten", iobbuf)
+			w := httptest.NewRecorder()
+			app.HandlePostJSON(w, request)
+			res := w.Result()
+			err := res.Body.Close()
+			assert.Nil(t, err)
+			assert.Equal(t, test.want.status, res.StatusCode)
+			body, _ := io.ReadAll(res.Body)
+			err = json.Unmarshal(body, &resdata)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			require.NoError(t, err)
+			resulturl := baseurl + "/" + app.Hash(test.url.Url)
+			assert.Equal(t, resulturl, resdata.Result)
+			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
 		})
 	}
 }

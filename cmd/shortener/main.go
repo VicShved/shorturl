@@ -12,6 +12,7 @@ func main() {
 	logger.Initialize("INFO")
 	router := chi.NewRouter()
 	router.Post("/", logger.AddLogging(app.HandlePOST))
+	router.Post("/api/shorten", logger.AddLogging(app.HandlePostJSON))
 	router.Get("/{key}", logger.AddLogging(app.HandleGET))
 
 	var config = app.InitServerConfig()

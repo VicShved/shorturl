@@ -1,10 +1,12 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 func HandlePOST(w http.ResponseWriter, r *http.Request) {
@@ -39,4 +41,42 @@ func HandleGET(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("url = ", url)
 	w.Header().Set("Location", url)
 	w.WriteHeader(http.StatusTemporaryRedirect)
+}
+
+func HandlePostJSON(w http.ResponseWriter, r *http.Request) {
+	type inJSON struct {
+		Url string `json:"url"`
+	}
+	var indata inJSON
+	type outJSON struct {
+		Result string `json:"result"`
+	}
+	urlmap := *GetStorage()
+	w.Header().Set("Content-Type", "application/json")
+	defer r.Body.Close()
+	urlbytes, _ := io.ReadAll(r.Body)
+	err := json.Unmarshal(urlbytes, &indata)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	key := Hash(indata.Url)
+	urlmap[key] = string(indata.Url)
+	w.WriteHeader(http.StatusCreated)
+	newurl := ServerConfig.BaseURL + "/" + key
+	fmt.Println("newurl = ", newurl)
+	var outdata outJSON
+	outdata.Result = newurl
+	resp, err := json.Marshal(outdata)
+	fmt.Println("resp = ", string(resp))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	lenth, err := w.Write(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Length", strconv.Itoa(lenth))
 }
