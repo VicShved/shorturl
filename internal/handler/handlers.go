@@ -1,8 +1,9 @@
-package app
+package handler
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/VicShved/shorturl/internal/app"
 	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
@@ -10,22 +11,22 @@ import (
 )
 
 func HandlePOST(w http.ResponseWriter, r *http.Request) {
-	urlmap := *GetStorage()
+	urlmap := *app.GetStorage()
 
 	w.Header().Set("Content-Type", "text/plain")
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	fmt.Println("string(urlBytes) = ", string(urlBytes))
-	key := Hash(string(urlBytes))
+	key := app.Hash(string(urlBytes))
 	urlmap[key] = string(urlBytes)
 	w.WriteHeader(http.StatusCreated)
-	newurl := ServerConfig.BaseURL + "/" + key
+	newurl := app.ServerConfig.BaseURL + "/" + key
 	fmt.Println("newurl = ", newurl)
 	w.Write([]byte(newurl))
 }
 
 func HandleGET(w http.ResponseWriter, r *http.Request) {
-	urlmap := *GetStorage()
+	urlmap := *app.GetStorage()
 
 	urlstr := chi.URLParam(r, "key")
 	fmt.Println("urlstr =", urlstr)
@@ -51,7 +52,7 @@ func HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	type outJSON struct {
 		Result string `json:"result"`
 	}
-	urlmap := *GetStorage()
+	urlmap := *app.GetStorage()
 	w.Header().Set("Content-Type", "application/json")
 	defer r.Body.Close()
 	urlbytes, _ := io.ReadAll(r.Body)
@@ -60,10 +61,10 @@ func HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	key := Hash(indata.URL)
+	key := app.Hash(indata.URL)
 	urlmap[key] = string(indata.URL)
 	w.WriteHeader(http.StatusCreated)
-	newurl := ServerConfig.BaseURL + "/" + key
+	newurl := app.ServerConfig.BaseURL + "/" + key
 	fmt.Println("newurl = ", newurl)
 	var outdata outJSON
 	outdata.Result = newurl

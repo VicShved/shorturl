@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
+	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -57,7 +58,7 @@ func TestPost(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
 			w := httptest.NewRecorder()
-			app.HandlePOST(w, request)
+			handler.HandlePOST(w, request)
 			res := w.Result()
 			err := res.Body.Close()
 			assert.Nil(t, err)
@@ -126,7 +127,7 @@ func TestGet(t *testing.T) {
 			rctx.URLParams.Add("key", test.suffics)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, rctx))
 
-			app.HandleGET(w, request)
+			handler.HandleGET(w, request)
 			res := w.Result()
 			err := res.Body.Close()
 			assert.Nil(t, err)
@@ -186,7 +187,7 @@ func TestPostJSON(t *testing.T) {
 			iobbuf := bytes.NewReader([]byte(bbuf))
 			request := httptest.NewRequest(test.method, "/api/shorten", iobbuf)
 			w := httptest.NewRecorder()
-			app.HandlePostJSON(w, request)
+			handler.HandlePostJSON(w, request)
 			res := w.Result()
 			err := res.Body.Close()
 			assert.Nil(t, err)
