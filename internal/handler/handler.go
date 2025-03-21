@@ -13,11 +13,15 @@ import (
 )
 
 type Handler struct {
-	serv *service.ShortenService
+	serv    *service.ShortenService
+	baseurl string
 }
 
-func GetHandler(serv *service.ShortenService) *Handler {
-	return &Handler{serv: serv}
+func GetHandler(serv *service.ShortenService, baseurl string) *Handler {
+	return &Handler{
+		serv:    serv,
+		baseurl: baseurl,
+	}
 }
 
 func (h Handler) InitRouter() *chi.Mux {
@@ -47,7 +51,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	key := app.Hash(indata.URL)
 	h.serv.Save(key, indata.URL)
 	w.WriteHeader(http.StatusCreated)
-	newurl := app.ServerConfig.BaseURL + "/" + key
+	newurl := h.baseurl + "/" + key
 	fmt.Println("newurl = ", newurl)
 	var outdata outJSON
 	outdata.Result = newurl
@@ -75,7 +79,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	key := app.Hash(url)
 	h.serv.Save(key, url)
 	w.WriteHeader(http.StatusCreated)
-	newurl := app.ServerConfig.BaseURL + "/" + key
+	newurl := h.baseurl + "/" + key
 	fmt.Println("newurl = ", newurl)
 	w.Write([]byte(newurl))
 }

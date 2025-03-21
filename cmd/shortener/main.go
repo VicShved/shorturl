@@ -16,11 +16,8 @@ func main() {
 	memstorage := app.GetStorage()
 	repo := repository.GetRepository(memstorage)
 	serv := service.GetService(repo)
-	handler := handler.GetHandler(serv)
+	handler := handler.GetHandler(serv, config.BaseURL)
 	router := handler.InitRouter()
-
-	//router := handler.GetRouter()
-
 	server := new(app.Server)
 	err := server.Run(config.ServerAddress, router)
 	if err != nil {
