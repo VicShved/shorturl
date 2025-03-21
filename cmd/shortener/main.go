@@ -1,24 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
-	"github.com/go-chi/chi/v5"
-	"net/http"
+	"github.com/VicShved/shorturl/internal/handler"
+	"github.com/VicShved/shorturl/internal/logger"
+	"github.com/VicShved/shorturl/internal/repository"
+	"github.com/VicShved/shorturl/internal/service"
+	"log"
 )
 
 func main() {
-	router := chi.NewRouter()
-	router.Post("/", app.HandlePOST)
-	router.Get("/{key}", app.HandleGET)
-
+	logger.Initialize("INFO")
 	var config = app.InitServerConfig()
 
-	fmt.Println("Start URL=", config.ServerAddress)
-	fmt.Println("Result URL=", config.BaseURL)
-
-	err := http.ListenAndServe(config.ServerAddress, router)
+	memstorage := app.GetStorage()
+	repo := repository.GetRepository(memstorage)
+	serv := service.GetService(repo)
+	handler := handler.GetHandler(serv, config.BaseURL)
+	router := handler.InitRouter()
+	server := new(app.Server)
+	err := server.Run(config.ServerAddress, router)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
