@@ -1,0 +1,99 @@
+package handler
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/VicShved/shorturl/internal/app"
+	"github.com/VicShved/shorturl/internal/logger"
+	"github.com/VicShved/shorturl/internal/service"
+	"github.com/go-chi/chi/v5"
+	"io"
+	"net/http"
+	"strconv"
+)
+
+type Handler struct {
+	serv *service.ShortenService
+}
+
+func GetHandler(serv *service.ShortenService) *Handler {
+	return &Handler{serv: serv}
+}
+
+func (h Handler) InitRouter() *chi.Mux {
+	router := chi.NewRouter()
+	router.Post("/", logger.AddLogging(h.HandlePOST))
+	router.Post("/api/shorten", logger.AddLogging(h.HandlePostJSON))
+	router.Get("/{key}", logger.AddLogging(h.HandleGET))
+	return router
+}
+
+func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
+	type inJSON struct {
+		URL string `json:"url"`
+	}
+	var indata inJSON
+	type outJSON struct {
+		Result string `json:"result"`
+	}
+	w.Header().Set("Content-Type", "application/json")
+	defer r.Body.Close()
+	urlbytes, _ := io.ReadAll(r.Body)
+	err := json.Unmarshal(urlbytes, &indata)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	key := app.Hash(indata.URL)
+	h.serv.Save(key, indata.URL)
+	w.WriteHeader(http.StatusCreated)
+	newurl := app.ServerConfig.BaseURL + "/" + key
+	fmt.Println("newurl = ", newurl)
+	var outdata outJSON
+	outdata.Result = newurl
+	resp, err := json.Marshal(outdata)
+	fmt.Println("resp = ", string(resp))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	lenth, err := w.Write(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Length", strconv.Itoa(lenth))
+}
+
+func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "text/plain")
+	defer r.Body.Close()
+	urlBytes, _ := io.ReadAll(r.Body)
+	url := string(urlBytes)
+	fmt.Println("string(urlBytes) = ", url)
+	key := app.Hash(url)
+	h.serv.Save(key, url)
+	w.WriteHeader(http.StatusCreated)
+	newurl := app.ServerConfig.BaseURL + "/" + key
+	fmt.Println("newurl = ", newurl)
+	w.Write([]byte(newurl))
+}
+
+func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
+
+	urlstr := chi.URLParam(r, "key")
+	fmt.Println("urlstr =", urlstr)
+
+	url, exists := h.serv.Read(urlstr)
+	fmt.Println("exists = ", exists)
+
+	if !exists {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	fmt.Println("url = ", url)
+	w.Header().Set("Location", url)
+	w.WriteHeader(http.StatusTemporaryRedirect)
+}
