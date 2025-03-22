@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
+	"github.com/VicShved/shorturl/internal/middleware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
@@ -220,4 +221,8 @@ func TestPostJSON(t *testing.T) {
 			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
 		})
 	}
+}
+
+func TestGzipCompression(t *testing.T) {
+	handler := http.HandlerFunc(middleware.CompressMiddleware(webhook))
 }
