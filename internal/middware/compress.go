@@ -52,10 +52,6 @@ func GzipMiddleware(next http.Handler) http.Handler {
 			zap.Bool("cntJSON", cntJSON),
 			zap.Bool("contTxt", contTxt),
 		)
-		//if !(cntJSON || contTxt) {
-		//	next.ServeHTTP(w, r)
-		//	return
-		//}
 
 		if cntEnc {
 			gr, err := newGzipReader(r.Body)
