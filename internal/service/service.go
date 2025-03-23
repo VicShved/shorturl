@@ -11,7 +11,7 @@ type Service struct {
 	SaverReader
 }
 type ShortenService struct {
-	repo *repository.Repository
+	repo *repository.FileRepository
 }
 
 func (s *ShortenService) Save(key string, value string) error {
@@ -22,6 +22,6 @@ func (s *ShortenService) Read(key string) (string, bool) {
 	return s.repo.Read(key)
 }
 
-func GetService(repo *repository.Repository) *ShortenService {
+func GetService(repo *repository.FileRepository) *ShortenService {
 	return &ShortenService{repo: repo}
 }

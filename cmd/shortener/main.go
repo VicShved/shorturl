@@ -6,6 +6,7 @@ import (
 	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 )
@@ -17,7 +18,12 @@ func main() {
 	var config = app.GetServerConfig()
 
 	memstorage := app.GetStorage()
-	repo := repository.GetRepository(memstorage)
+	//repo := repository.GetRepository(memstorage)
+	repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
+	//repository.InitFromFile(config.FileStoragePath, &repo.SaverReader)
+	repo.InitFromFile()
+	middware.Log.Info("Main", zap.Int("len memstorage", len(*memstorage)))
+	repo.InitSaveFile()
 	serv := service.GetService(repo)
 	handler := handler.GetHandler(serv, config.BaseURL)
 

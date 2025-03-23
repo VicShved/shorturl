@@ -17,3 +17,7 @@ func (s *SaverReaderMem) Read(key string) (string, bool) {
 	result, ok := (*s.mp)[key]
 	return result, ok
 }
+
+func (s *SaverReaderMem) Len() int {
+	return len(*s.mp)
+}
