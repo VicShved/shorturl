@@ -57,7 +57,7 @@ func TestPost(t *testing.T) {
 	app.ServerConfig.BaseURL = "http://localhost:8080"
 	baseurl := app.ServerConfig.BaseURL
 	memstorage := app.GetStorage()
-	repo := repository.GetRepository(memstorage)
+	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo)
 	handlers := handler.GetHandler(serv, baseurl)
 
@@ -120,7 +120,7 @@ func TestGet(t *testing.T) {
 	}
 
 	memstorage := app.GetStorage()
-	repo := repository.GetRepository(memstorage)
+	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo)
 	handlers := handler.GetHandler(serv, "")
 
@@ -193,7 +193,7 @@ func TestPostJSON(t *testing.T) {
 	app.ServerConfig.BaseURL = "http://localhost:8080"
 	baseurl := app.ServerConfig.BaseURL
 	memstorage := app.GetStorage()
-	repo := repository.GetRepository(memstorage)
+	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo)
 	handlers := handler.GetHandler(serv, baseurl)
 
@@ -221,21 +221,3 @@ func TestPostJSON(t *testing.T) {
 		})
 	}
 }
-
-//func TestGzipCompression(t *testing.T) {
-//	type resJSON struct {
-//		Result string `json:"result"`
-//	}
-//	var resdata resJSON
-//	app.ServerConfig.BaseURL = "http://localhost:8080"
-//	baseurl := app.ServerConfig.BaseURL
-//	memstorage := app.GetStorage()
-//	repo := repository.GetRepository(memstorage)
-//	serv := service.GetService(repo)
-//	handlers := handler.GetHandler(serv, baseurl)
-//	handlers := middware.CompressMiddleware()
-//
-//	handler := http.HandlerFunc(middware.CompressMiddleware(webhook))
-//	srv := httptest.NewServer(handler)
-//
-//}
