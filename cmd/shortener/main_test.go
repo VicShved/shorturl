@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
-	"github.com/VicShved/shorturl/internal/middleware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
@@ -223,6 +222,20 @@ func TestPostJSON(t *testing.T) {
 	}
 }
 
-func TestGzipCompression(t *testing.T) {
-	handler := http.HandlerFunc(middleware.CompressMiddleware(webhook))
-}
+//func TestGzipCompression(t *testing.T) {
+//	type resJSON struct {
+//		Result string `json:"result"`
+//	}
+//	var resdata resJSON
+//	app.ServerConfig.BaseURL = "http://localhost:8080"
+//	baseurl := app.ServerConfig.BaseURL
+//	memstorage := app.GetStorage()
+//	repo := repository.GetRepository(memstorage)
+//	serv := service.GetService(repo)
+//	handlers := handler.GetHandler(serv, baseurl)
+//	handlers := middware.CompressMiddleware()
+//
+//	handler := http.HandlerFunc(middware.CompressMiddleware(webhook))
+//	srv := httptest.NewServer(handler)
+//
+//}

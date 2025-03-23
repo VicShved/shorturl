@@ -1,4 +1,4 @@
-package middleware
+package middware
 
 import (
 	"compress/gzip"
@@ -39,19 +39,19 @@ func (gz *gzipReader) Close() error {
 	}
 	return gz.gz.Close()
 }
-func CompressMiddleware(next http.Handler) http.Handler {
+func GzipMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cntenc := strings.Contains(r.Header.Get("Content-Encoding"), "gzip")
+		cntEnc := strings.Contains(r.Header.Get("Content-Encoding"), "gzip")
 		accEnc := strings.Contains(r.Header.Get("Accept-Encoding"), "gzip")
-		cntjson := strings.Contains(r.Header.Get("Content-Type"), "application/json")
-		conttxt := strings.Contains(r.Header.Get("Content-Type"), "text/html")
+		cntJson := strings.Contains(r.Header.Get("Content-Type"), "application/json")
+		contTxt := strings.Contains(r.Header.Get("Content-Type"), "text/html")
 
-		if !(cntjson || conttxt) {
+		if !(cntJson || contTxt) {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		if cntenc {
+		if cntEnc {
 			gr, err := newGzipReader(r.Body)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -68,10 +68,10 @@ func CompressMiddleware(next http.Handler) http.Handler {
 				io.WriteString(w, err.Error())
 				return
 			}
+			defer gz.Close()
 			next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
 			return
 		}
 		next.ServeHTTP(w, r)
-
 	})
 }

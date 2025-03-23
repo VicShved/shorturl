@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
-	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
 	"io"
@@ -24,11 +23,14 @@ func GetHandler(serv *service.ShortenService, baseurl string) *Handler {
 	}
 }
 
-func (h Handler) InitRouter() *chi.Mux {
+func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	router := chi.NewRouter()
-	router.Post("/", logger.AddLogging(h.HandlePOST))
-	router.Post("/api/shorten", logger.AddLogging(h.HandlePostJSON))
-	router.Get("/{key}", logger.AddLogging(h.HandleGET))
+	for _, mw := range mdwr {
+		router.Use(mw)
+	}
+	router.Post("/", h.HandlePOST)
+	router.Post("/api/shorten", h.HandlePostJSON)
+	router.Get("/{key}", h.HandleGET)
 	return router
 }
 

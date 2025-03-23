@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/VicShved/shorturl/internal/middleware"
 	"github.com/go-chi/chi/v5"
 	"net/http"
 )
@@ -14,7 +13,8 @@ func (s *Server) Run(serverAddress string, router *chi.Mux) error {
 
 	s.hTTPServer = &http.Server{
 		Addr:    serverAddress,
-		Handler: middleware.CompressMiddleware(router),
+		Handler: router,
+		//Handler: middware.CompressMiddleware(router),
 	}
 	return s.hTTPServer.ListenAndServe()
 

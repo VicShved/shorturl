@@ -12,7 +12,7 @@ type ServerConfigStruct struct {
 
 var ServerConfig ServerConfigStruct
 
-func InitServerConfig() *ServerConfigStruct {
+func GetServerConfig() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.ServerAddress, "a", "localhost:8080", "start base url")
 	flag.StringVar(&ServerConfig.BaseURL, "b", "http://localhost:8080", "result base url")
 	flag.Parse()
