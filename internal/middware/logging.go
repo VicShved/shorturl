@@ -64,7 +64,6 @@ func Logger(next http.Handler) http.Handler {
 			zap.Int("status", responseData.status),
 			zap.Int("size", responseData.size),
 		)
-
 	}
 	return http.HandlerFunc(logFn)
 }

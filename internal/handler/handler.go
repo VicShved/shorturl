@@ -2,10 +2,11 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
+	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"strconv"
@@ -54,11 +55,10 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	h.serv.Save(key, indata.URL)
 	w.WriteHeader(http.StatusCreated)
 	newurl := h.baseurl + "/" + key
-	fmt.Println("newurl = ", newurl)
+	//fmt.Println("newurl = ", newurl)
 	var outdata outJSON
 	outdata.Result = newurl
 	resp, err := json.Marshal(outdata)
-	fmt.Println("resp = ", string(resp))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -69,6 +69,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
+	middware.Log.Info("", zap.String("url", indata.URL), zap.String("response", string(resp)))
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
@@ -77,29 +78,29 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	url := string(urlBytes)
-	fmt.Println("string(urlBytes) = ", url)
+	//fmt.Println("string(urlBytes) = ", url)
 	key := app.Hash(url)
 	h.serv.Save(key, url)
 	w.WriteHeader(http.StatusCreated)
 	newurl := h.baseurl + "/" + key
-	fmt.Println("newurl = ", newurl)
+	//fmt.Println("newurl = ", newurl)
 	w.Write([]byte(newurl))
 }
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 
 	urlstr := chi.URLParam(r, "key")
-	fmt.Println("urlstr =", urlstr)
+	//fmt.Println("urlstr =", urlstr)
 
 	url, exists := h.serv.Read(urlstr)
-	fmt.Println("exists = ", exists)
+	//fmt.Println("exists = ", exists)
 
 	if !exists {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("url = ", url)
+	//fmt.Println("url = ", url)
 	w.Header().Set("Location", url)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
