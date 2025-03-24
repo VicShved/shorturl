@@ -14,7 +14,6 @@ func (s *Server) Run(serverAddress string, router *chi.Mux) error {
 	s.hTTPServer = &http.Server{
 		Addr:    serverAddress,
 		Handler: router,
-		//Handler: middware.CompressMiddleware(router),
 	}
 	return s.hTTPServer.ListenAndServe()
 

@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/VicShved/shorturl/internal/app"
-	"github.com/VicShved/shorturl/internal/middware"
+	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
@@ -69,7 +69,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
-	middware.Log.Info("", zap.String("url", indata.URL), zap.String("response", string(resp)))
+	logger.Log.Info("", zap.String("url", indata.URL), zap.String("response", string(resp)))
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {

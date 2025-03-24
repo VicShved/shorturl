@@ -2,6 +2,7 @@ package middware
 
 import (
 	"compress/gzip"
+	"github.com/VicShved/shorturl/internal/logger"
 	"go.uber.org/zap"
 	"io"
 	"net/http"
@@ -25,7 +26,7 @@ type gzipReader struct {
 func newGzipReader(r io.ReadCloser) (*gzipReader, error) {
 	gz, err := gzip.NewReader(r)
 	if err != nil {
-		Log.Error("new gzip reader", zap.Error(err))
+		logger.Log.Error("new gzip reader", zap.Error(err))
 		return nil, err
 	}
 	return &gzipReader{r: r, gz: gz}, nil
@@ -47,7 +48,7 @@ func GzipMiddleware(next http.Handler) http.Handler {
 		accEnc := strings.Contains(r.Header.Get("Accept-Encoding"), "gzip")
 		cntJSON := strings.Contains(r.Header.Get("Content-Type"), "application/json")
 		contTxt := strings.Contains(r.Header.Get("Content-Type"), "text/html")
-		Log.Info("GzipMiddleware", zap.Bool("cntEnc", cntEnc),
+		logger.Log.Info("GzipMiddleware", zap.Bool("cntEnc", cntEnc),
 			zap.Bool("accEnc", accEnc),
 			zap.Bool("cntJSON", cntJSON),
 			zap.Bool("contTxt", contTxt),

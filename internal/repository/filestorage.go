@@ -3,7 +3,7 @@ package repository
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/VicShved/shorturl/internal/middware"
+	"github.com/VicShved/shorturl/internal/logger"
 	"go.uber.org/zap"
 	"os"
 	"strconv"
@@ -46,7 +46,7 @@ func (c *Consumer) Close() error {
 }
 
 func InitFromFile(filename string, storage *SaverReader) error {
-	middware.Log.Info("InitFromFile", zap.String("filename", filename))
+	logger.Log.Info("InitFromFile", zap.String("filename", filename))
 	consumer, err := NewConsumer(filename)
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func NewProducer(filename string) (*Producer, error) {
 
 func (p *Producer) WriteElement(elem *Element) error {
 	data, err := json.Marshal(*elem)
-	middware.Log.Info("WriteElement", zap.String("data", string(data)))
+	logger.Log.Info("WriteElement", zap.String("data", string(data)))
 	if err != nil {
 		return err
 	}
@@ -99,10 +99,13 @@ type FileRepository struct {
 }
 
 func GetFileRepository(mp *map[string]string, filenme string) *FileRepository {
-	return &FileRepository{
+	repo := &FileRepository{
 		sr:       NewSaverReaderMem(mp),
 		Filename: filenme,
 	}
+	repo.InitFromFile()
+	repo.InitSaveFile()
+	return repo
 }
 
 func (r *FileRepository) InitSaveFile() error {
@@ -119,7 +122,7 @@ func (r *FileRepository) Save(short, original string) error {
 	_, ok := r.sr.Read(short)
 	if !ok {
 		if r.Producer != nil {
-			middware.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original))
+			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original))
 			id := r.sr.Len() + 1
 			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original})
 			if err != nil {
@@ -135,7 +138,7 @@ func (r *FileRepository) Read(short string) (string, bool) {
 }
 
 func (r *FileRepository) InitFromFile() error {
-	middware.Log.Info("InitFromFile", zap.String("filename", r.Filename))
+	logger.Log.Info("InitFromFile", zap.String("filename", r.Filename))
 	consumer, err := NewConsumer(r.Filename)
 	if err != nil {
 		return err

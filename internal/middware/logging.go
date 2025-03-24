@@ -1,28 +1,29 @@
 package middware
 
 import (
+	"github.com/VicShved/shorturl/internal/logger"
 	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
 
-var Log *zap.Logger = zap.NewNop()
-
-func InitLogger(level string) error {
-	lvl, err := zap.ParseAtomicLevel(level)
-	if err != nil {
-		return err
-	}
-	cfg := zap.NewProductionConfig()
-	cfg.Level = lvl
-	log, err := cfg.Build()
-	if err != nil {
-		return err
-	}
-	Log = log
-	defer Log.Sync()
-	return nil
-}
+//var Log *zap.Logger = zap.NewNop()
+//
+//func InitLogger(level string) error {
+//	lvl, err := zap.ParseAtomicLevel(level)
+//	if err != nil {
+//		return err
+//	}
+//	cfg := zap.NewProductionConfig()
+//	cfg.Level = lvl
+//	log, err := cfg.Build()
+//	if err != nil {
+//		return err
+//	}
+//	Log = log
+//	defer Log.Sync()
+//	return nil
+//}
 
 type responseData struct {
 	status int
@@ -57,7 +58,7 @@ func Logger(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(&lw, r)
 		duration := time.Since(start)
-		Log.Info("",
+		logger.Log.Info("",
 			zap.String("url", r.RequestURI),
 			zap.String("method", r.Method),
 			zap.Duration("duration", duration),
