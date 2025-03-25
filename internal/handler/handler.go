@@ -12,6 +12,14 @@ import (
 	"strconv"
 )
 
+type reqJSON struct {
+	URL string `json:"url"`
+}
+
+type respJSON struct {
+	Result string `json:"result"`
+}
+
 type Handler struct {
 	serv    *service.ShortenService
 	baseurl string
@@ -36,13 +44,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 }
 
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
-	type inJSON struct {
-		URL string `json:"url"`
-	}
-	var indata inJSON
-	type outJSON struct {
-		Result string `json:"result"`
-	}
+	var indata reqJSON
 	w.Header().Set("Content-Type", "application/json")
 	defer r.Body.Close()
 	urlbytes, _ := io.ReadAll(r.Body)
@@ -56,7 +58,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	newurl := h.baseurl + "/" + key
 	//fmt.Println("newurl = ", newurl)
-	var outdata outJSON
+	var outdata respJSON
 	outdata.Result = newurl
 	resp, err := json.Marshal(outdata)
 	if err != nil {
