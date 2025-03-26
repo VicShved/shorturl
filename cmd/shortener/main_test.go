@@ -1,9 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
+	"github.com/VicShved/shorturl/internal/handler"
+	"github.com/VicShved/shorturl/internal/repository"
+	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -51,11 +56,16 @@ func TestPost(t *testing.T) {
 
 	app.ServerConfig.BaseURL = "http://localhost:8080"
 	baseurl := app.ServerConfig.BaseURL
+	memstorage := app.GetStorage()
+	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
+	serv := service.GetService(repo)
+	handlers := handler.GetHandler(serv, baseurl)
+
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
 			w := httptest.NewRecorder()
-			app.HandlePOST(w, request)
+			handlers.HandlePOST(w, request)
 			res := w.Result()
 			err := res.Body.Close()
 			assert.Nil(t, err)
@@ -109,10 +119,14 @@ func TestGet(t *testing.T) {
 		},
 	}
 
-	urlmap := *app.GetStorage()
+	memstorage := app.GetStorage()
+	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
+	serv := service.GetService(repo)
+	handlers := handler.GetHandler(serv, "")
+
 	for _, test := range tests {
 		if test.suffics != "" {
-			urlmap[test.suffics] = test.want.locationheader
+			(*memstorage)[test.suffics] = test.want.locationheader
 		}
 		t.Run(test.name, func(t *testing.T) {
 			target := "/{key}"
@@ -124,7 +138,7 @@ func TestGet(t *testing.T) {
 			rctx.URLParams.Add("key", test.suffics)
 			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, rctx))
 
-			app.HandleGET(w, request)
+			handlers.HandleGET(w, request)
 			res := w.Result()
 			err := res.Body.Close()
 			assert.Nil(t, err)
@@ -132,6 +146,78 @@ func TestGet(t *testing.T) {
 			if test.suffics != "" {
 				assert.Equal(t, test.want.locationheader, res.Header.Get("Location"))
 			}
+		})
+	}
+}
+
+func TestPostJSON(t *testing.T) {
+
+	type body struct {
+		URL string `json:"url"`
+	}
+	type want struct {
+		status int
+		//response    string
+		contentType string
+	}
+	var tests = []struct {
+		name   string
+		method string
+		url    body
+		want   want
+	}{
+		{
+			name:   "testPostJSON1",
+			method: http.MethodPost,
+			url:    body{URL: "https://google.com"},
+			want: want{
+				status:      201,
+				contentType: "application/json",
+			},
+		},
+		{
+			name:   "testPostJSON2",
+			method: http.MethodPost,
+			url:    body{URL: "https://rbc.ru/"},
+
+			want: want{
+				status:      201,
+				contentType: "application/json",
+			},
+		},
+	}
+	type resJSON struct {
+		Result string `json:"result"`
+	}
+	var resdata resJSON
+	app.ServerConfig.BaseURL = "http://localhost:8080"
+	baseurl := app.ServerConfig.BaseURL
+	memstorage := app.GetStorage()
+	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
+	serv := service.GetService(repo)
+	handlers := handler.GetHandler(serv, baseurl)
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			bbuf, _ := json.Marshal(test.url)
+			iobbuf := bytes.NewReader([]byte(bbuf))
+			request := httptest.NewRequest(test.method, "/api/shorten", iobbuf)
+			w := httptest.NewRecorder()
+			handlers.HandlePostJSON(w, request)
+			res := w.Result()
+			err := res.Body.Close()
+			assert.Nil(t, err)
+			assert.Equal(t, test.want.status, res.StatusCode)
+			body, _ := io.ReadAll(res.Body)
+			err = json.Unmarshal(body, &resdata)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			require.NoError(t, err)
+			resulturl := baseurl + "/" + app.Hash(test.url.URL)
+			assert.Equal(t, resulturl, resdata.Result)
+			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
 		})
 	}
 }

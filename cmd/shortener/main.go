@@ -1,24 +1,41 @@
 package main
 
 import (
-	"fmt"
 	"github.com/VicShved/shorturl/internal/app"
-	"github.com/go-chi/chi/v5"
+	"github.com/VicShved/shorturl/internal/handler"
+	"github.com/VicShved/shorturl/internal/logger"
+	"github.com/VicShved/shorturl/internal/middware"
+	"github.com/VicShved/shorturl/internal/repository"
+	"github.com/VicShved/shorturl/internal/service"
+	"log"
 	"net/http"
 )
 
 func main() {
-	router := chi.NewRouter()
-	router.Post("/", app.HandlePOST)
-	router.Get("/{key}", app.HandleGET)
+	// Init custom logger
+	logger.InitLogger("INFO")
+	// Get app config
+	var config = app.GetServerConfig()
 
-	var config = app.InitServerConfig()
-
-	fmt.Println("Start URL=", config.ServerAddress)
-	fmt.Println("Result URL=", config.BaseURL)
-
-	err := http.ListenAndServe(config.ServerAddress, router)
+	// mem storage
+	memstorage := app.GetStorage()
+	// file storage = mem storage + initial read and save changes to file
+	repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
+	// Bussiness layer (empty)
+	serv := service.GetService(repo)
+	// Handlers
+	handler := handler.GetHandler(serv, config.BaseURL)
+	// Middlewares chain
+	middlewares := []func(http.Handler) http.Handler{
+		middware.Logger,
+		middware.GzipMiddleware,
+	}
+	//	Create Router
+	router := handler.InitRouter(middlewares)
+	// Run server
+	server := new(app.Server)
+	err := server.Run(config.ServerAddress, router)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }

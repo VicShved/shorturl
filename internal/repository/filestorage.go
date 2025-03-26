@@ -1,0 +1,162 @@
+package repository
+
+import (
+	"bufio"
+	"encoding/json"
+	"github.com/VicShved/shorturl/internal/logger"
+	"go.uber.org/zap"
+	"os"
+	"strconv"
+)
+
+type Element struct {
+	ID       string `json:"id,omitempty"`
+	Short    string `json:"short_url"`
+	Original string `json:"original_url"`
+}
+
+type Consumer struct {
+	file    *os.File
+	scanner *bufio.Scanner
+}
+
+func NewConsumer(filename string) (*Consumer, error) {
+	file, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, err
+	}
+	return &Consumer{file: file, scanner: bufio.NewScanner(file)}, nil
+}
+
+func (c *Consumer) ReadElement() (*Element, error) {
+	if !c.scanner.Scan() {
+		return nil, c.scanner.Err()
+	}
+	data := c.scanner.Bytes()
+	element := new(Element)
+	err := json.Unmarshal(data, element)
+	if err != nil {
+		return nil, err
+	}
+	return element, nil
+}
+
+func (c *Consumer) Close() error {
+	return c.file.Close()
+}
+
+func InitFromFile(filename string, storage *SaverReader) error {
+	logger.Log.Info("InitFromFile", zap.String("filename", filename))
+	consumer, err := NewConsumer(filename)
+	if err != nil {
+		return err
+	}
+
+	elem, err := consumer.ReadElement()
+	if err != nil {
+		return err
+	}
+	for elem != nil {
+		err = (*storage).Save(elem.Short, elem.Original)
+		if err != nil {
+			return err
+		}
+		elem, err = consumer.ReadElement()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+type Producer struct {
+	file *os.File
+}
+
+func NewProducer(filename string) (*Producer, error) {
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return nil, err
+	}
+	return &Producer{file: file}, nil
+}
+
+func (p *Producer) WriteElement(elem *Element) error {
+	data, err := json.Marshal(*elem)
+	logger.Log.Info("WriteElement", zap.String("data", string(data)))
+	if err != nil {
+		return err
+	}
+	data = append(data, '\n')
+	_, err = p.file.Write(data)
+	return err
+}
+
+type FileRepository struct {
+	sr       *SaverReaderMem
+	Filename string
+	Producer *Producer
+}
+
+func GetFileRepository(mp *map[string]string, filenme string) *FileRepository {
+	repo := &FileRepository{
+		sr:       NewSaverReaderMem(mp),
+		Filename: filenme,
+	}
+	repo.InitFromFile()
+	repo.InitSaveFile()
+	return repo
+}
+
+func (r *FileRepository) InitSaveFile() error {
+
+	err := error(nil)
+	r.Producer, err = NewProducer(r.Filename)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *FileRepository) Save(short, original string) error {
+	_, ok := r.sr.Read(short)
+	if !ok {
+		if r.Producer != nil {
+			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original))
+			id := r.sr.Len() + 1
+			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return r.sr.Save(short, original)
+}
+
+func (r *FileRepository) Read(short string) (string, bool) {
+	return r.sr.Read(short)
+}
+
+func (r *FileRepository) InitFromFile() error {
+	logger.Log.Info("InitFromFile", zap.String("filename", r.Filename))
+	consumer, err := NewConsumer(r.Filename)
+	if err != nil {
+		return err
+	}
+
+	elem, err := consumer.ReadElement()
+	if err != nil {
+		return err
+	}
+	for elem != nil {
+		err = (*r).Save(elem.Short, elem.Original)
+		if err != nil {
+			return err
+		}
+		elem, err = consumer.ReadElement()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
