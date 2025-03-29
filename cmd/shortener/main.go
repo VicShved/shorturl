@@ -1,14 +1,15 @@
 package main
 
 import (
+	"log"
+	"net/http"
+
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	// file storage = mem storage + initial read and save changes to file
 	repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
 	// Bussiness layer (empty)
-	serv := service.GetService(repo)
+	serv := service.GetService(*repo)
 	// Handlers
 	handler := handler.GetHandler(serv, config.BaseURL)
 	// Middlewares chain

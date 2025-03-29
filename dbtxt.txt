@@ -1,0 +1,3 @@
+{"id":"1","short_url":"1806126526","original_url":"https://rbc.ru"}
+{"id":"2","short_url":"859497656","original_url":"http://dajjfvlrt0b.yandex/dwrr4xbiushx0"}
+{"id":"3","short_url":"4212395242","original_url":"http://h2f5oxjn8r.biz"}

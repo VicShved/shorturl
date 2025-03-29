@@ -5,6 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/VicShved/shorturl/internal/repository"
@@ -12,11 +18,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 func TestPost(t *testing.T) {
@@ -58,7 +59,7 @@ func TestPost(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
-	serv := service.GetService(repo)
+	serv := service.GetService(*repo)
 	handlers := handler.GetHandler(serv, baseurl)
 
 	for _, test := range tests {

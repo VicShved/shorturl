@@ -3,10 +3,11 @@ package repository
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/VicShved/shorturl/internal/logger"
-	"go.uber.org/zap"
 	"os"
 	"strconv"
+
+	"github.com/VicShved/shorturl/internal/logger"
+	"go.uber.org/zap"
 )
 
 type Element struct {
@@ -98,6 +99,25 @@ type FileRepository struct {
 	Producer *Producer
 }
 
+func (r FileRepository) Save(short, original string) error {
+	_, ok := r.sr.Read(short)
+	if !ok {
+		if r.Producer != nil {
+			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original))
+			id := r.sr.Len() + 1
+			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original})
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return r.sr.Save(short, original)
+}
+
+func (r FileRepository) Read(short string) (string, bool) {
+	return r.sr.Read(short)
+}
+
 func GetFileRepository(mp *map[string]string, filenme string) *FileRepository {
 	repo := &FileRepository{
 		sr:       NewSaverReaderMem(mp),
@@ -116,25 +136,6 @@ func (r *FileRepository) InitSaveFile() error {
 		return err
 	}
 	return nil
-}
-
-func (r *FileRepository) Save(short, original string) error {
-	_, ok := r.sr.Read(short)
-	if !ok {
-		if r.Producer != nil {
-			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original))
-			id := r.sr.Len() + 1
-			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original})
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return r.sr.Save(short, original)
-}
-
-func (r *FileRepository) Read(short string) (string, bool) {
-	return r.sr.Read(short)
 }
 
 func (r *FileRepository) InitFromFile() error {
