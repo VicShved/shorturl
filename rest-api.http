@@ -1,0 +1,21 @@
+POST http://localhost:8080
+Content-Type: text/plain
+
+https://rbc.ru
+
+###
+GET http://localhost:8080/1806126526
+Content-Type: text/plain
+
+###
+GET http://localhost:8080/1806126526
+Content-Type: text/html
+
+###
+POST http://localhost:8080/api/shorten
+Content-Type: application/json
+
+{"url":"https://rbc.ru"}
+
+###
+

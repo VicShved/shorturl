@@ -3,10 +3,11 @@ package repository
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/VicShved/shorturl/internal/logger"
-	"go.uber.org/zap"
 	"os"
 	"strconv"
+
+	"github.com/VicShved/shorturl/internal/logger"
+	"go.uber.org/zap"
 )
 
 type Element struct {
@@ -118,7 +119,7 @@ func (r *FileRepository) InitSaveFile() error {
 	return nil
 }
 
-func (r *FileRepository) Save(short, original string) error {
+func (r FileRepository) Save(short, original string) error {
 	_, ok := r.sr.Read(short)
 	if !ok {
 		if r.Producer != nil {
@@ -133,8 +134,8 @@ func (r *FileRepository) Save(short, original string) error {
 	return r.sr.Save(short, original)
 }
 
-func (r *FileRepository) Read(short string) (string, bool) {
-	return r.sr.Read(short)
+func (r FileRepository) Read(short string) (string, bool) {
+	return (*r.sr).Read(short)
 }
 
 func (r *FileRepository) InitFromFile() error {
