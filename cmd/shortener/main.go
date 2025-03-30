@@ -21,6 +21,10 @@ func main() {
 
 	// postgres driver
 	pgdriver, err := sql.Open("pgx", config.DbDSN)
+	if err != nil {
+		panic(err)
+	}
+	defer pgdriver.Close()
 	// mem storage
 	memstorage := app.GetStorage()
 	// file storage = mem storage + initial read and save changes to file
