@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -18,6 +19,8 @@ func main() {
 	// Get app config
 	var config = app.GetServerConfig()
 
+	// postgres driver
+	pgdriver, err := sql.Open("pgx", config.DbDSN)
 	// mem storage
 	memstorage := app.GetStorage()
 	// file storage = mem storage + initial read and save changes to file
@@ -25,7 +28,7 @@ func main() {
 	// Bussiness layer (empty)
 	serv := service.GetService(repo)
 	// Handlers
-	handler := handler.GetHandler(serv, config.BaseURL)
+	handler := handler.GetHandler(serv, config.BaseURL, pgdriver)
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
 		middware.Logger,
@@ -35,7 +38,7 @@ func main() {
 	router := handler.InitRouter(middlewares)
 	// Run server
 	server := new(app.Server)
-	err := server.Run(config.ServerAddress, router)
+	err = server.Run(config.ServerAddress, router)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -18,4 +18,5 @@ Content-Type: application/json
 {"url":"https://rbc.ru"}
 
 ###
-
+GET http://localhost:8080/ping
+Content-Type: text/plain

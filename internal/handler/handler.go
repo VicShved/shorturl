@@ -1,15 +1,17 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
+	"io"
+	"net/http"
+	"strconv"
+
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
-	"io"
-	"net/http"
-	"strconv"
 )
 
 type reqJSON struct {
@@ -21,14 +23,16 @@ type respJSON struct {
 }
 
 type Handler struct {
-	serv    *service.ShortenService
-	baseurl string
+	serv     *service.ShortenService
+	baseurl  string
+	pgdriver *sql.DB
 }
 
-func GetHandler(serv *service.ShortenService, baseurl string) *Handler {
+func GetHandler(serv *service.ShortenService, baseurl string, pgdriver *sql.DB) *Handler {
 	return &Handler{
-		serv:    serv,
-		baseurl: baseurl,
+		serv:     serv,
+		baseurl:  baseurl,
+		pgdriver: pgdriver,
 	}
 }
 
@@ -40,6 +44,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	router.Post("/", h.HandlePOST)
 	router.Post("/api/shorten", h.HandlePostJSON)
 	router.Get("/{key}", h.HandleGET)
+	router.Get("/ping", h.PingDB)
 	return router
 }
 
@@ -105,4 +110,14 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println("url = ", url)
 	w.Header().Set("Location", url)
 	w.WriteHeader(http.StatusTemporaryRedirect)
+}
+
+func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
+
+	err := h.pgdriver.Ping()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

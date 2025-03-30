@@ -5,6 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/VicShved/shorturl/internal/repository"
@@ -12,11 +18,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"io"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 func TestPost(t *testing.T) {
@@ -59,7 +60,7 @@ func TestPost(t *testing.T) {
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo)
-	handlers := handler.GetHandler(serv, baseurl)
+	handlers := handler.GetHandler(serv, baseurl, nil)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -122,7 +123,7 @@ func TestGet(t *testing.T) {
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo)
-	handlers := handler.GetHandler(serv, "")
+	handlers := handler.GetHandler(serv, "", nil)
 
 	for _, test := range tests {
 		if test.suffics != "" {
@@ -195,7 +196,7 @@ func TestPostJSON(t *testing.T) {
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo)
-	handlers := handler.GetHandler(serv, baseurl)
+	handlers := handler.GetHandler(serv, baseurl, nil)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
