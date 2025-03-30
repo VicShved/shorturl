@@ -20,7 +20,7 @@ func main() {
 	var config = app.GetServerConfig()
 
 	// postgres driver
-	pgdriver, err := sql.Open("pgx", config.DbDSN)
+	pgdriver, err := sql.Open("pgx", config.DBDSN)
 	if err != nil {
 		panic(err)
 	}

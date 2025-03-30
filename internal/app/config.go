@@ -9,7 +9,7 @@ type ServerConfigStruct struct {
 	ServerAddress   string
 	BaseURL         string
 	FileStoragePath string
-	DbDSN           string
+	DBDSN           string
 }
 
 var ServerConfig ServerConfigStruct
@@ -18,7 +18,7 @@ func GetServerConfig() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.ServerAddress, "a", "localhost:8080", "start base url")
 	flag.StringVar(&ServerConfig.BaseURL, "b", "http://localhost:8080", "result base url")
 	flag.StringVar(&ServerConfig.FileStoragePath, "f", "dbtxt.txt", "file storage path")
-	flag.StringVar(&ServerConfig.DbDSN, "d", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable", "database dsn")
+	flag.StringVar(&ServerConfig.DBDSN, "d", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable", "database dsn")
 	flag.Parse()
 
 	value, exists := os.LookupEnv("SERVER_ADDRESS")
@@ -38,7 +38,7 @@ func GetServerConfig() *ServerConfigStruct {
 
 	value, exists = os.LookupEnv("DATABASE_DSN")
 	if exists {
-		ServerConfig.DbDSN = value
+		ServerConfig.DBDSN = value
 	}
 
 	return &ServerConfig
