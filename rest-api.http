@@ -20,3 +20,9 @@ Content-Type: application/json
 ###
 GET http://localhost:8080/ping
 Content-Type: text/plain
+
+###
+POST http://localhost:8080/api/shorten/batch
+Content-Type: application/json
+
+[{"correlation_id":"1","url":"https://rbc.ru"},{"correlation_id":"2","url":"https://ya.ru"}]

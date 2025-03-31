@@ -40,6 +40,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	}
 	router.Post("/", h.HandlePOST)
 	router.Post("/api/shorten", h.HandlePostJSON)
+	router.Post("/api/shorten/batch", h.HandleBatchPOST)
 	router.Get("/{key}", h.HandleGET)
 	router.Get("/ping", h.PingDB)
 	return router
@@ -117,4 +118,36 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
+	var indata []service.BatchReqJSON
+	w.Header().Set("Content-Type", "application/json")
+	defer r.Body.Close()
+	urlbytes, _ := io.ReadAll(r.Body)
+	err := json.Unmarshal(urlbytes, &indata)
+	logger.Log.Info("indata", zap.Int("len", len(indata)))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	results, err := h.serv.Batch(&indata)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+
+	resp, err := json.Marshal(results)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	lenth, err := w.Write(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Length", strconv.Itoa(lenth))
+	logger.Log.Info("Batch handled", zap.String("response", string(resp)))
 }
