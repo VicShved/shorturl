@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+// hash
 func Hash(s string) string {
 	h := fnv.New32a()
 	_, err := h.Write([]byte(s))

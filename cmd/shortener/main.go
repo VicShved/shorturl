@@ -25,12 +25,17 @@ func main() {
 		panic(err)
 	}
 	defer pgdriver.Close()
+	dbrepo, err := repository.GetDBRepository(pgdriver)
+	if err != nil {
+		panic(err)
+	}
+	serv := service.GetService(dbrepo)
 	// mem storage
-	memstorage := app.GetStorage()
+	// memstorage := app.GetStorage()
 	// file storage = mem storage + initial read and save changes to file
-	repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
+	// repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
 	// Bussiness layer (empty)
-	serv := service.GetService(repo)
+	// serv := service.GetService(repo)
 	// Handlers
 	handler := handler.GetHandler(serv, config.BaseURL, pgdriver)
 	// Middlewares chain
