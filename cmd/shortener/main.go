@@ -21,6 +21,7 @@ func main() {
 
 	var repo service.SaverReader
 	// set db repo
+
 	if len(config.DBDSN) > 0 {
 		// postgres driver
 		pgdriver, err := sql.Open("pgx", config.DBDSN)
@@ -33,14 +34,17 @@ func main() {
 			panic(err)
 		}
 		repo = dbrepo
+		logger.Log.Info("Connect to db")
 	}
 
 	//  mem storage
 	memstorage := app.GetStorage()
 
-	if repo == nil && len(config.FileStoragePath) > 0 {
+	if (repo == nil) && len(config.FileStoragePath) > 0 {
 		repo = repository.GetFileRepository(memstorage, config.FileStoragePath)
-	} else {
+	}
+
+	if repo == nil {
 		repo = repository.GetMemRepository(memstorage)
 	}
 
