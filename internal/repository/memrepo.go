@@ -1,23 +1,27 @@
 package repository
 
-type SaverReaderMem struct {
+type MemRepiository struct {
 	mp *map[string]string
 }
 
-func NewSaverReaderMem(mp *map[string]string) *SaverReaderMem {
-	return &SaverReaderMem{mp: mp}
+func GetMemRepository(mp *map[string]string) *MemRepiository {
+	return &MemRepiository{mp: mp}
 }
 
-func (s *SaverReaderMem) Save(key string, value string) error {
+func (s MemRepiository) Save(key string, value string) error {
 	(*s.mp)[key] = value
 	return nil
 }
 
-func (s *SaverReaderMem) Read(key string) (string, bool) {
+func (s MemRepiository) Read(key string) (string, bool) {
 	result, ok := (*s.mp)[key]
 	return result, ok
 }
 
-func (s *SaverReaderMem) Len() int {
+func (s MemRepiository) Len() int {
 	return len(*s.mp)
+}
+
+func (s MemRepiository) Ping() error {
+	return nil
 }

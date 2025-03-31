@@ -19,25 +19,37 @@ func main() {
 	// Get app config
 	var config = app.GetServerConfig()
 
-	// postgres driver
-	pgdriver, err := sql.Open("pgx", config.DBDSN)
-	if err != nil {
-		panic(err)
+	var repo service.SaverReader
+	// set db repo
+	if len(config.DBDSN) > 0 {
+		// postgres driver
+		pgdriver, err := sql.Open("pgx", config.DBDSN)
+		if err != nil {
+			panic(err)
+		}
+		defer pgdriver.Close()
+		dbrepo, err := repository.GetDBRepository(pgdriver)
+		if err != nil {
+			panic(err)
+		}
+		repo = dbrepo
 	}
-	defer pgdriver.Close()
-	dbrepo, err := repository.GetDBRepository(pgdriver)
-	if err != nil {
-		panic(err)
+
+	//  mem storage
+	memstorage := app.GetStorage()
+
+	if repo == nil && len(config.FileStoragePath) > 0 {
+		repo = repository.GetFileRepository(memstorage, config.FileStoragePath)
+	} else {
+		repo = repository.GetMemRepository(memstorage)
 	}
-	serv := service.GetService(dbrepo)
-	// mem storage
-	// memstorage := app.GetStorage()
+
 	// file storage = mem storage + initial read and save changes to file
-	// repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
+
 	// Bussiness layer (empty)
-	// serv := service.GetService(repo)
+	serv := service.GetService(repo)
 	// Handlers
-	handler := handler.GetHandler(serv, config.BaseURL, pgdriver)
+	handler := handler.GetHandler(serv, config.BaseURL)
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
 		middware.Logger,
@@ -47,7 +59,7 @@ func main() {
 	router := handler.InitRouter(middlewares)
 	// Run server
 	server := new(app.Server)
-	err = server.Run(config.ServerAddress, router)
+	err := server.Run(config.ServerAddress, router)
 	if err != nil {
 		log.Fatal(err)
 	}

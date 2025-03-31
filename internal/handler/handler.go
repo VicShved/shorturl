@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"database/sql"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -23,16 +22,14 @@ type respJSON struct {
 }
 
 type Handler struct {
-	serv     *service.ShortenService
-	baseurl  string
-	pgdriver *sql.DB
+	serv    *service.ShortenService
+	baseurl string
 }
 
-func GetHandler(serv *service.ShortenService, baseurl string, pgdriver *sql.DB) *Handler {
+func GetHandler(serv *service.ShortenService, baseurl string) *Handler {
 	return &Handler{
-		serv:     serv,
-		baseurl:  baseurl,
-		pgdriver: pgdriver,
+		serv:    serv,
+		baseurl: baseurl,
 	}
 }
 
@@ -114,7 +111,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 
-	err := h.pgdriver.Ping()
+	err := h.serv.Ping()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

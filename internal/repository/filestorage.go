@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/VicShved/shorturl/internal/logger"
+	"github.com/VicShved/shorturl/internal/service"
 	"go.uber.org/zap"
 )
 
@@ -46,7 +47,7 @@ func (c *Consumer) Close() error {
 	return c.file.Close()
 }
 
-func InitFromFile(filename string, storage *SaverReader) error {
+func InitFromFile(filename string, storage *service.SaverReader) error {
 	logger.Log.Info("InitFromFile", zap.String("filename", filename))
 	consumer, err := NewConsumer(filename)
 	if err != nil {
@@ -94,14 +95,14 @@ func (p *Producer) WriteElement(elem *Element) error {
 }
 
 type FileRepository struct {
-	sr       *SaverReaderMem
+	sr       *MemRepiository
 	Filename string
 	Producer *Producer
 }
 
 func GetFileRepository(mp *map[string]string, filenme string) *FileRepository {
 	repo := &FileRepository{
-		sr:       NewSaverReaderMem(mp),
+		sr:       GetMemRepository(mp),
 		Filename: filenme,
 	}
 	repo.InitFromFile()
@@ -136,6 +137,14 @@ func (r FileRepository) Save(short, original string) error {
 
 func (r FileRepository) Read(short string) (string, bool) {
 	return (*r.sr).Read(short)
+}
+
+func (r FileRepository) Ping() error {
+	return r.sr.Ping()
+}
+
+func (r FileRepository) Len() int {
+	return r.sr.Len()
 }
 
 func (r *FileRepository) InitFromFile() error {

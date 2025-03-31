@@ -58,3 +58,28 @@ func (r DBRepository) Read(short string) (string, bool) {
 	}
 	return value.String, true
 }
+
+func (r DBRepository) Len() int {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	row := r.db.QueryRowContext(ctx, `SELECT count(*) FROM public.pract_keyvalue`)
+	var value sql.NullInt32
+	err := row.Scan(&value)
+
+	if err == sql.ErrNoRows {
+		return 0
+	}
+
+	if !value.Valid {
+		return 0
+	}
+
+	if err != nil {
+		return 0
+	}
+	return int(value.Int32)
+}
+
+func (r DBRepository) Ping() error {
+	return r.db.Ping()
+}
