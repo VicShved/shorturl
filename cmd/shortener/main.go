@@ -51,9 +51,9 @@ func main() {
 	// file storage = mem storage + initial read and save changes to file
 
 	// Bussiness layer (empty)
-	serv := service.GetService(repo)
+	serv := service.GetService(repo, config.BaseURL)
 	// Handlers
-	handler := handler.GetHandler(serv, config.BaseURL)
+	handler := handler.GetHandler(serv)
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
 		middware.Logger,

@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
@@ -26,10 +25,9 @@ type Handler struct {
 	baseurl string
 }
 
-func GetHandler(serv *service.ShortenService, baseurl string) *Handler {
+func GetHandler(serv *service.ShortenService) *Handler {
 	return &Handler{
-		serv:    serv,
-		baseurl: baseurl,
+		serv: serv,
 	}
 }
 
@@ -56,13 +54,12 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	key := app.Hash(indata.URL)
-	h.serv.Save(key, indata.URL)
+	newurl, key := h.serv.GetShortURL(&indata.URL)
+
+	h.serv.Save(*key, indata.URL)
 	w.WriteHeader(http.StatusCreated)
-	newurl := h.baseurl + "/" + key
-	//fmt.Println("newurl = ", newurl)
 	var outdata respJSON
-	outdata.Result = newurl
+	outdata.Result = *newurl
 	resp, err := json.Marshal(outdata)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -83,13 +80,12 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	url := string(urlBytes)
-	//fmt.Println("string(urlBytes) = ", url)
-	key := app.Hash(url)
-	h.serv.Save(key, url)
+	newurl, key := h.serv.GetShortURL(&url)
+	h.serv.Save(*key, url)
 	w.WriteHeader(http.StatusCreated)
-	newurl := h.baseurl + "/" + key
+
 	//fmt.Println("newurl = ", newurl)
-	w.Write([]byte(newurl))
+	w.Write([]byte(*newurl))
 }
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {

@@ -59,8 +59,8 @@ func TestPost(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
-	serv := service.GetService(repo)
-	handlers := handler.GetHandler(serv, baseurl)
+	serv := service.GetService(repo, baseurl)
+	handlers := handler.GetHandler(serv)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -122,8 +122,8 @@ func TestGet(t *testing.T) {
 
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
-	serv := service.GetService(repo)
-	handlers := handler.GetHandler(serv, "")
+	serv := service.GetService(repo, "")
+	handlers := handler.GetHandler(serv)
 
 	for _, test := range tests {
 		if test.suffics != "" {
@@ -195,8 +195,8 @@ func TestPostJSON(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	memstorage := app.GetStorage()
 	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
-	serv := service.GetService(repo)
-	handlers := handler.GetHandler(serv, baseurl)
+	serv := service.GetService(repo, baseurl)
+	handlers := handler.GetHandler(serv)
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

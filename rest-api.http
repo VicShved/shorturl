@@ -26,3 +26,7 @@ POST http://localhost:8080/api/shorten/batch
 Content-Type: application/json
 
 [{"correlation_id":"1","original_url":"https://rbc.ru"},{"correlation_id":"2","original_url":"https://ya.ru"}]
+
+###
+GET http://localhost:8080/2105327019
+Content-Type: text/html
