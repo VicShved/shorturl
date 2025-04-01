@@ -25,4 +25,4 @@ Content-Type: text/plain
 POST http://localhost:8080/api/shorten/batch
 Content-Type: application/json
 
-[{"correlation_id":"1","url":"https://rbc.ru"},{"correlation_id":"2","url":"https://ya.ru"}]
+[{"correlation_id":"1","original_url":"https://rbc.ru"},{"correlation_id":"2","original_url":"https://ya.ru"}]

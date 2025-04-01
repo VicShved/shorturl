@@ -123,10 +123,10 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	var indata []service.BatchReqJSON
 	w.Header().Set("Content-Type", "application/json")
-	defer r.Body.Close()
 	urlbytes, _ := io.ReadAll(r.Body)
+	defer r.Body.Close()
 	err := json.Unmarshal(urlbytes, &indata)
-	logger.Log.Info("indata", zap.Int("len", len(indata)))
+	logger.Log.Info("indata", zap.Any("len", indata))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
