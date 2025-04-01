@@ -83,3 +83,20 @@ func (r DBRepository) Len() int {
 func (r DBRepository) Ping() error {
 	return r.db.Ping()
 }
+
+func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	for _, element := range *data {
+		_, err := tx.ExecContext(ctx, `INSERT INTO public.pract_keyvalue ("key", value) VALUES($1, $2)`, element.Key, element.LongURL)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return tx.Commit()
+}

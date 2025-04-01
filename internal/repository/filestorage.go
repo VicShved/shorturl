@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/VicShved/shorturl/internal/logger"
-	"github.com/VicShved/shorturl/internal/service"
 	"go.uber.org/zap"
 )
 
@@ -47,7 +46,7 @@ func (c *Consumer) Close() error {
 	return c.file.Close()
 }
 
-func InitFromFile(filename string, storage *service.SaverReader) error {
+func InitFromFile(filename string, storage *RepoInterface) error {
 	logger.Log.Info("InitFromFile", zap.String("filename", filename))
 	consumer, err := NewConsumer(filename)
 	if err != nil {
@@ -145,6 +144,16 @@ func (r FileRepository) Ping() error {
 
 func (r FileRepository) Len() int {
 	return r.sr.Len()
+}
+
+func (r FileRepository) Batch(data *[]KeyLongURLStr) error {
+	for _, element := range *data {
+		err := r.Save(element.Key, element.LongURL)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (r *FileRepository) InitFromFile() error {

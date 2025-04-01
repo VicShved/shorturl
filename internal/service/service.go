@@ -2,16 +2,9 @@ package service
 
 import (
 	"github.com/VicShved/shorturl/internal/app"
-	"github.com/VicShved/shorturl/internal/logger"
-	"go.uber.org/zap"
+	"github.com/VicShved/shorturl/internal/repository"
+	// "go.uber.org/zap"
 )
-
-type SaverReader interface {
-	Save(key string, value string) error
-	Read(key string) (string, bool)
-	Ping() error
-	Len() int
-}
 
 type BatchReqJSON struct {
 	CorrelationID string `json:"correlation_id"`
@@ -23,11 +16,11 @@ type BatchRespJSON struct {
 	ShortURL      string `json:"short_url"`
 }
 
-type Service struct {
-	SaverReader
-}
+//	type Service struct {
+//		RepoInterface
+//	}
 type ShortenService struct {
-	repo    SaverReader
+	repo    repository.RepoInterface
 	baseurl string
 }
 
@@ -49,23 +42,43 @@ func (s *ShortenService) Len() int {
 
 func (s *ShortenService) Batch(indata *[]BatchReqJSON) ([]BatchRespJSON, error) {
 	var results []BatchRespJSON
+	var repodata []repository.KeyLongURLStr
 	for _, element := range *indata {
-		logger.Log.Info("elem", zap.String("id", element.CorrelationID), zap.String("Original", element.OriginalURL))
 		shorturl, key := s.GetShortURL(&element.OriginalURL)
 		res := BatchRespJSON{
 			CorrelationID: element.CorrelationID,
 			ShortURL:      *shorturl,
 		}
 		results = append(results, res)
-		logger.Log.Info("res", zap.String("id", res.CorrelationID), zap.String("short", res.ShortURL))
-		err := s.Save(*key, element.OriginalURL)
-		if err != nil {
-			logger.Log.Error("Error", zap.Error(err))
-			return results, err
-		}
+		repodata = append(repodata, repository.KeyLongURLStr{Key: *key, LongURL: element.OriginalURL})
+
+	}
+	err := s.repo.Batch(&repodata)
+	if err != nil {
+		return nil, err
 	}
 	return results, nil
 }
+
+// func (s *ShortenService) Batch(indata *[]BatchReqJSON) ([]BatchRespJSON, error) {
+// 	var results []BatchRespJSON
+// 	for _, element := range *indata {
+// 		logger.Log.Info("elem", zap.String("id", element.CorrelationID), zap.String("Original", element.OriginalURL))
+// 		shorturl, key := s.GetShortURL(&element.OriginalURL)
+// 		res := BatchRespJSON{
+// 			CorrelationID: element.CorrelationID,
+// 			ShortURL:      *shorturl,
+// 		}
+// 		results = append(results, res)
+// 		logger.Log.Info("res", zap.String("id", res.CorrelationID), zap.String("short", res.ShortURL))
+// 		err := s.Save(*key, element.OriginalURL)
+// 		if err != nil {
+// 			logger.Log.Error("Error", zap.Error(err))
+// 			return results, err
+// 		}
+// 	}
+// 	return results, nil
+// }
 
 func (s *ShortenService) GetShortURL(longURL *string) (*string, *string) {
 	key := app.Hash(*longURL)
@@ -74,6 +87,6 @@ func (s *ShortenService) GetShortURL(longURL *string) (*string, *string) {
 
 }
 
-func GetService(repo SaverReader, baseurl string) *ShortenService {
+func GetService(repo repository.RepoInterface, baseurl string) *ShortenService {
 	return &ShortenService{repo: repo, baseurl: baseurl}
 }

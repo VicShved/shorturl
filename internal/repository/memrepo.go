@@ -25,3 +25,13 @@ func (s MemRepiository) Len() int {
 func (s MemRepiository) Ping() error {
 	return nil
 }
+
+func (s MemRepiository) Batch(data *[]KeyLongURLStr) error {
+	for _, element := range *data {
+		err := s.Save(element.Key, element.LongURL)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

@@ -19,7 +19,7 @@ func main() {
 	// Get app config
 	var config = app.GetServerConfig()
 
-	var repo service.SaverReader
+	var repo repository.RepoInterface
 	// set db repo
 
 	if len(config.DBDSN) > 0 {
