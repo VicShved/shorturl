@@ -122,7 +122,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	urlbytes, _ := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	err := json.Unmarshal(urlbytes, &indata)
-	logger.Log.Info("indata", zap.Any("len", indata))
+	// logger.Log.Info("indata", zap.Any("len", indata))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

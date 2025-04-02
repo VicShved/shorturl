@@ -87,6 +87,8 @@ func (r DBRepository) Ping() error {
 func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
+
+	// Open transaction
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -94,9 +96,16 @@ func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
 	for _, element := range *data {
 		_, err := tx.ExecContext(ctx, `INSERT INTO public.pract_keyvalue ("key", value) VALUES($1, $2)`, element.Key, element.LongURL)
 		if err != nil {
+			// rollback transaction
 			tx.Rollback()
 			return err
 		}
 	}
-	return tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		// rollback transaction
+		tx.Rollback()
+		return err
+	}
+	return err
 }
