@@ -1,5 +1,7 @@
 package repository
 
+import "errors"
+
 type KeyLongURLStr struct {
 	Key     string
 	LongURL string
@@ -12,3 +14,5 @@ type RepoInterface interface {
 	Len() int
 	Batch(*[]KeyLongURLStr) error
 }
+
+var ErrPKConflict = errors.New("PK conflict")

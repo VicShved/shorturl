@@ -2,11 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/VicShved/shorturl/internal/logger"
+	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
@@ -56,8 +58,14 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	newurl, key := h.serv.GetShortURL(&indata.URL)
 
-	h.serv.Save(*key, indata.URL)
-	w.WriteHeader(http.StatusCreated)
+	err = h.serv.Save(*key, indata.URL)
+
+	if err != nil && errors.Is(err, repository.ErrPKConflict) {
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+	}
+
 	var outdata respJSON
 	outdata.Result = *newurl
 	resp, err := json.Marshal(outdata)
@@ -81,8 +89,13 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	urlBytes, _ := io.ReadAll(r.Body)
 	url := string(urlBytes)
 	newurl, key := h.serv.GetShortURL(&url)
-	h.serv.Save(*key, url)
-	w.WriteHeader(http.StatusCreated)
+	err := h.serv.Save(*key, url)
+
+	if err != nil && errors.Is(err, repository.ErrPKConflict) {
+		w.WriteHeader(http.StatusConflict)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+	}
 
 	//fmt.Println("newurl = ", newurl)
 	w.Write([]byte(*newurl))
