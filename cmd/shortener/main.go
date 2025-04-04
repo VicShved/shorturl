@@ -1,14 +1,16 @@
 package main
 
 import (
+	"database/sql"
+	"log"
+	"net/http"
+
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -17,21 +19,46 @@ func main() {
 	// Get app config
 	var config = app.GetServerConfig()
 
-	// mem storage
-	memstorage := app.GetStorage()
-	// file storage = mem storage + initial read and save changes to file
-	repo := repository.GetFileRepository(memstorage, config.FileStoragePath)
+	// repo choice
+	var repo repository.RepoInterface
+	// set db repo
+	if len(config.DBDSN) > 0 {
+		// postgres driver
+		pgdriver, err := sql.Open("pgx", config.DBDSN)
+		if err != nil {
+			panic(err)
+		}
+		defer pgdriver.Close()
+		dbrepo, err := repository.GetDBRepository(pgdriver)
+		if err != nil {
+			panic(err)
+		}
+		repo = dbrepo
+		logger.Log.Info("Connect to db")
+	} else if len(config.FileStoragePath) > 0 {
+		//  set file-mem repo
+		memstorage := app.GetStorage()
+		repo = repository.GetFileRepository(memstorage, config.FileStoragePath)
+	} else {
+		// set  mem repo
+		memstorage := app.GetStorage()
+		repo = repository.GetMemRepository(memstorage)
+	}
+
 	// Bussiness layer (empty)
-	serv := service.GetService(repo)
+	serv := service.GetService(repo, config.BaseURL)
 	// Handlers
-	handler := handler.GetHandler(serv, config.BaseURL)
+	handler := handler.GetHandler(serv)
+
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
 		middware.Logger,
 		middware.GzipMiddleware,
 	}
+
 	//	Create Router
 	router := handler.InitRouter(middlewares)
+
 	// Run server
 	server := new(app.Server)
 	err := server.Run(config.ServerAddress, router)

@@ -1,16 +1,18 @@
 package repository
 
-type SaverReader interface {
+import "errors"
+
+type KeyLongURLStr struct {
+	Key     string
+	LongURL string
+}
+
+type RepoInterface interface {
 	Save(key string, value string) error
 	Read(key string) (string, bool)
+	Ping() error
+	Len() int
+	Batch(*[]KeyLongURLStr) error
 }
 
-type Repository struct {
-	SaverReader
-}
-
-func GetRepository(mp *map[string]string) *Repository {
-	return &Repository{
-		SaverReader: NewSaverReaderMem(mp),
-	}
-}
+var ErrPKConflict = errors.New("PK conflict")

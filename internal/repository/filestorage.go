@@ -3,10 +3,11 @@ package repository
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/VicShved/shorturl/internal/logger"
-	"go.uber.org/zap"
 	"os"
 	"strconv"
+
+	"github.com/VicShved/shorturl/internal/logger"
+	"go.uber.org/zap"
 )
 
 type Element struct {
@@ -45,7 +46,7 @@ func (c *Consumer) Close() error {
 	return c.file.Close()
 }
 
-func InitFromFile(filename string, storage *SaverReader) error {
+func InitFromFile(filename string, storage *RepoInterface) error {
 	logger.Log.Info("InitFromFile", zap.String("filename", filename))
 	consumer, err := NewConsumer(filename)
 	if err != nil {
@@ -93,14 +94,14 @@ func (p *Producer) WriteElement(elem *Element) error {
 }
 
 type FileRepository struct {
-	sr       *SaverReaderMem
+	sr       *MemRepiository
 	Filename string
 	Producer *Producer
 }
 
 func GetFileRepository(mp *map[string]string, filenme string) *FileRepository {
 	repo := &FileRepository{
-		sr:       NewSaverReaderMem(mp),
+		sr:       GetMemRepository(mp),
 		Filename: filenme,
 	}
 	repo.InitFromFile()
@@ -118,7 +119,7 @@ func (r *FileRepository) InitSaveFile() error {
 	return nil
 }
 
-func (r *FileRepository) Save(short, original string) error {
+func (r FileRepository) Save(short, original string) error {
 	_, ok := r.sr.Read(short)
 	if !ok {
 		if r.Producer != nil {
@@ -133,8 +134,26 @@ func (r *FileRepository) Save(short, original string) error {
 	return r.sr.Save(short, original)
 }
 
-func (r *FileRepository) Read(short string) (string, bool) {
-	return r.sr.Read(short)
+func (r FileRepository) Read(short string) (string, bool) {
+	return (*r.sr).Read(short)
+}
+
+func (r FileRepository) Ping() error {
+	return r.sr.Ping()
+}
+
+func (r FileRepository) Len() int {
+	return r.sr.Len()
+}
+
+func (r FileRepository) Batch(data *[]KeyLongURLStr) error {
+	for _, element := range *data {
+		err := r.Save(element.Key, element.LongURL)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (r *FileRepository) InitFromFile() error {
