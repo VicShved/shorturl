@@ -10,7 +10,7 @@ import (
 )
 
 type ShortOriginalURL struct {
-	Short    string `json:"short_url",gorm:"primaryKey"`
+	Short    string `json:"short_url" gorm:"primaryKey"`
 	Original string `json:"original_url"`
 }
 
