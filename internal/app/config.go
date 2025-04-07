@@ -19,7 +19,7 @@ func GetServerConfig() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.BaseURL, "b", "http://localhost:8080", "result base url")
 	flag.StringVar(&ServerConfig.FileStoragePath, "f", "", "file storage path")
 	flag.StringVar(&ServerConfig.DBDSN, "d", "", "DataBase DSN")
-	// host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable", "database dsn
+	// host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
 	flag.Parse()
 
 	value, exists := os.LookupEnv("SERVER_ADDRESS")

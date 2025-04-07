@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
@@ -24,15 +23,16 @@ func main() {
 	// set db repo
 	if len(config.DBDSN) > 0 {
 		// postgres driver
-		pgdriver, err := sql.Open("pgx", config.DBDSN)
-		if err != nil {
-			panic(err)
-		}
-		defer pgdriver.Close()
-		dbrepo, err := repository.GetDBRepository(pgdriver)
-		if err != nil {
-			panic(err)
-		}
+		// pgdriver, err := sql.Open("pgx", config.DBDSN)
+		// if err != nil {
+		// 	panic(err)
+		// }
+		// defer pgdriver.Close()
+		// dbrepo, err := repository.GetDBRepository(pgdriver)
+		// if err != nil {
+		// 	panic(err)
+		// }
+		dbrepo := repository.GetDBRepo(config.DBDSN)
 		repo = dbrepo
 		logger.Log.Info("Connect to db")
 	} else if len(config.FileStoragePath) > 0 {
