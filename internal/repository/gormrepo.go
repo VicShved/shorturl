@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -46,7 +48,8 @@ func (r GormRepository) Save(short, original string) error {
 	result := r.db.WithContext(ctx).Create(&row)
 	if result.Error != nil {
 		// проверяем, что ошибка сигнализирует о потенциальном нарушении целостности данных
-		if errors.Is(result.Error, gorm.ErrCheckConstraintViolated) {
+		var pgErr *pgconn.PgError
+		if errors.As(result.Error, &pgErr) && pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
 			return ErrPKConflict
 		}
 	}
