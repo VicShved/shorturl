@@ -23,7 +23,8 @@ func GetGormDB(dns string) (*gorm.DB, error) {
 	return db, err
 }
 
-func GetGormRepository(db *gorm.DB) (*GormRepository, error) {
+func GetGormRepo(dns string) (*GormRepository, error) {
+	db, _ := GetGormDB(dns)
 	repo := &GormRepository{
 		db: db,
 	}

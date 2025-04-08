@@ -32,7 +32,7 @@ func main() {
 		// if err != nil {
 		// 	panic(err)
 		// }
-		dbrepo := repository.GetDBRepo(config.DBDSN)
+		dbrepo, _ := repository.GetGormRepo(config.DBDSN)
 		repo = dbrepo
 		logger.Log.Info("Connect to db")
 	} else if len(config.FileStoragePath) > 0 {
