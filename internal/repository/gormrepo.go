@@ -46,7 +46,7 @@ func (r GormRepository) Save(short, original string) error {
 	result := r.db.WithContext(ctx).Create(&row)
 	if result.Error != nil {
 		// проверяем, что ошибка сигнализирует о потенциальном нарушении целостности данных
-		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+		if errors.Is(result.Error, gorm.ErrCheckConstraintViolated) {
 			return ErrPKConflict
 		}
 	}
