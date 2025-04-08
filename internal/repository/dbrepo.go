@@ -19,6 +19,20 @@ type DBRepository struct {
 	db *sql.DB
 }
 
+func GetDBRepo(dsn string) *DBRepository {
+	// postgres driver
+	pgdriver, err := sql.Open("pgx", dsn)
+	if err != nil {
+		panic(err)
+	}
+	// defer pgdriver.Close()
+	dbrepo, err := GetDBRepository(pgdriver)
+	if err != nil {
+		panic(err)
+	}
+	return dbrepo
+}
+
 func GetDBRepository(db *sql.DB) (*DBRepository, error) {
 	repo := &DBRepository{
 		db: db,
