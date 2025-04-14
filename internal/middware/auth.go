@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func setAuthCook(w http.ResponseWriter, userID *string) {
+func setAuthCook(w http.ResponseWriter, userID *app.TypeUserID) {
 
 	token, _ := app.GetJWTTokenString(userID)
 	http.SetCookie(w, &http.Cookie{
@@ -19,7 +19,7 @@ func setAuthCook(w http.ResponseWriter, userID *string) {
 	})
 }
 
-func parseTokenUserID(tokenStr string) (*jwt.Token, string, error) {
+func parseTokenUserID(tokenStr string) (*jwt.Token, app.TypeUserID, error) {
 	claims := &app.CustClaims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(app.ServerConfig.SecretKey), nil
@@ -30,7 +30,7 @@ func parseTokenUserID(tokenStr string) (*jwt.Token, string, error) {
 // auth middleware
 func AuthMiddleware(next http.Handler) http.Handler {
 	authFunc := func(w http.ResponseWriter, r *http.Request) {
-		var userID string
+		var userID app.TypeUserID
 		var token *jwt.Token
 		cook, err := r.Cookie(app.AuthorizationCookName)
 		//  если нет куки, то создаю новый
@@ -53,7 +53,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
-		logger.Log.Debug("User ", zap.String("ID", userID))
+		logger.Log.Debug("User ", zap.String("ID", string(userID)))
 		// next handler
 		ctx := context.WithValue(r.Context(), app.ContextUser, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))

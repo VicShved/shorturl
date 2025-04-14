@@ -66,7 +66,7 @@ func TestPost(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
 			ctx := request.Context()
-			ctx = context.WithValue(ctx, app.ContextUser, user)
+			ctx = context.WithValue(ctx, app.ContextUser, string(user))
 			request = request.WithContext(ctx)
 			w := httptest.NewRecorder()
 			handlers.HandlePOST(w, request)
@@ -130,7 +130,7 @@ func TestGet(t *testing.T) {
 
 	for _, test := range tests {
 		if test.suffics != "" {
-			serv.Save(test.suffics, test.want.locationheader, user)
+			serv.Save(test.suffics, test.want.locationheader, string(user))
 		}
 		t.Run(test.name, func(t *testing.T) {
 			target := "/{key}"
@@ -142,7 +142,7 @@ func TestGet(t *testing.T) {
 			rctx.URLParams.Add("key", test.suffics)
 			ctx := request.Context()
 			ctx = context.WithValue(ctx, chi.RouteCtxKey, rctx)
-			ctx = context.WithValue(ctx, app.ContextUser, user)
+			ctx = context.WithValue(ctx, app.ContextUser, string(user))
 			request = request.WithContext(ctx)
 
 			handlers.HandleGET(w, request)
@@ -210,7 +210,7 @@ func TestPostJSON(t *testing.T) {
 			iobbuf := bytes.NewReader([]byte(bbuf))
 			request := httptest.NewRequest(test.method, "/api/shorten", iobbuf)
 			ctx := request.Context()
-			ctx = context.WithValue(ctx, app.ContextUser, user)
+			ctx = context.WithValue(ctx, app.ContextUser, string(user))
 			request = request.WithContext(ctx)
 			w := httptest.NewRecorder()
 			handlers.HandlePostJSON(w, request)

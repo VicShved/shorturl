@@ -4,16 +4,18 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
+type TypeUserID string
+
 type CustClaims struct {
 	jwt.RegisteredClaims
-	User string
+	User TypeUserID
 }
 
 var AuthorizationCookName = "AuthorizationCook"
 var SigningMethod = jwt.SigningMethodHS512
 var ContextUser = "User"
 
-func GetJWTTokenString(userID *string) (string, error) {
+func GetJWTTokenString(userID *TypeUserID) (string, error) {
 	claim := CustClaims{
 		User: *userID,
 	}

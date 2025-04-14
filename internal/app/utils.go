@@ -17,6 +17,7 @@ func Hash(s string) string {
 	return strconv.Itoa(int(h.Sum32()))
 }
 
-func GetNewUUID() (string, error) {
-	return uuid.GenerateUUID()
+func GetNewUUID() (TypeUserID, error) {
+	userID, err := uuid.GenerateUUID()
+	return TypeUserID(userID), err
 }
