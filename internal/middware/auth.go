@@ -24,7 +24,7 @@ func parseTokenUserID(tokenStr string) (*jwt.Token, string, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(app.ServerConfig.SecretKey), nil
 	})
-	return token, (*claims).UserID, err
+	return token, (*claims).User, err
 }
 
 // auth middleware
@@ -55,7 +55,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 		logger.Log.Debug("User ", zap.String("ID", userID))
 		// next handler
-		ctx := context.WithValue(r.Context(), app.ContextUserIDKey, userID)
+		ctx := context.WithValue(r.Context(), app.ContextUser, userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 	return http.HandlerFunc(authFunc)

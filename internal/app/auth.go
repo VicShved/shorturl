@@ -6,16 +6,16 @@ import (
 
 type CustClaims struct {
 	jwt.RegisteredClaims
-	UserID string
+	User string
 }
 
 var AuthorizationCookName = "AuthorizationCook"
 var SigningMethod = jwt.SigningMethodHS512
-var ContextUserIDKey = "UserID"
+var ContextUser = "User"
 
 func GetJWTTokenString(userID *string) (string, error) {
 	claim := CustClaims{
-		UserID: *userID,
+		User: *userID,
 	}
 	token := jwt.NewWithClaims(SigningMethod, claim)
 	tokenStr, err := token.SignedString([]byte(ServerConfig.SecretKey))

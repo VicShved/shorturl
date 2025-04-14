@@ -49,7 +49,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
-	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "application/json")
@@ -87,7 +87,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "text/plain")
@@ -108,7 +108,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	urlstr := chi.URLParam(r, "key")
@@ -128,7 +128,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUserIDKey)
+	userID := r.Context().Value(app.ContextUser)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	err := h.serv.Ping()
@@ -140,7 +140,7 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	var indata []service.BatchReqJSON
