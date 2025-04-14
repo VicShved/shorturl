@@ -57,14 +57,17 @@ func TestPost(t *testing.T) {
 
 	app.ServerConfig.BaseURL = "http://localhost:8080"
 	baseurl := app.ServerConfig.BaseURL
-	memstorage := app.GetStorage()
-	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
+	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
 	handlers := handler.GetHandler(serv)
+	userID, _ := app.GetNewUserID()
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
+			ctx := request.Context()
+			ctx = context.WithValue(ctx, app.ContextUserIDKey, userID)
+			request = request.WithContext(ctx)
 			w := httptest.NewRecorder()
 			handlers.HandlePOST(w, request)
 			res := w.Result()
@@ -120,14 +123,14 @@ func TestGet(t *testing.T) {
 		},
 	}
 
-	memstorage := app.GetStorage()
-	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
+	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, "")
 	handlers := handler.GetHandler(serv)
+	userID, _ := app.GetNewUserID()
 
 	for _, test := range tests {
 		if test.suffics != "" {
-			(*memstorage)[test.suffics] = test.want.locationheader
+			serv.Save(test.suffics, test.want.locationheader, userID)
 		}
 		t.Run(test.name, func(t *testing.T) {
 			target := "/{key}"
@@ -137,7 +140,10 @@ func TestGet(t *testing.T) {
 
 			rctx := chi.NewRouteContext()
 			rctx.URLParams.Add("key", test.suffics)
-			request = request.WithContext(context.WithValue(request.Context(), chi.RouteCtxKey, rctx))
+			ctx := request.Context()
+			ctx = context.WithValue(ctx, chi.RouteCtxKey, rctx)
+			ctx = context.WithValue(ctx, app.ContextUserIDKey, userID)
+			request = request.WithContext(ctx)
 
 			handlers.HandleGET(w, request)
 			res := w.Result()
@@ -193,16 +199,19 @@ func TestPostJSON(t *testing.T) {
 	var resdata resJSON
 	app.ServerConfig.BaseURL = "http://localhost:8080"
 	baseurl := app.ServerConfig.BaseURL
-	memstorage := app.GetStorage()
-	repo := repository.GetFileRepository(memstorage, app.ServerConfig.FileStoragePath)
+	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
 	handlers := handler.GetHandler(serv)
+	userID, _ := app.GetNewUserID()
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			bbuf, _ := json.Marshal(test.url)
 			iobbuf := bytes.NewReader([]byte(bbuf))
 			request := httptest.NewRequest(test.method, "/api/shorten", iobbuf)
+			ctx := request.Context()
+			ctx = context.WithValue(ctx, app.ContextUserIDKey, userID)
+			request = request.WithContext(ctx)
 			w := httptest.NewRecorder()
 			handlers.HandlePostJSON(w, request)
 			res := w.Result()

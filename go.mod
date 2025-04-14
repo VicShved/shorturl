@@ -4,10 +4,14 @@ go 1.22.12
 
 require (
 	github.com/go-chi/chi/v5 v5.1.0
+	github.com/golang-jwt/jwt/v4 v4.5.2
+	github.com/hashicorp/go-uuid v1.0.3
 	github.com/jackc/pgerrcode v0.0.0-20240316143900-6e2875d9b438
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/stretchr/testify v1.8.1
 	go.uber.org/zap v1.27.0
+	gorm.io/driver/postgres v1.5.11
+	gorm.io/gorm v1.25.10
 )
 
 require (
@@ -24,6 +28,4 @@ require (
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/postgres v1.5.11 // indirect
-	gorm.io/gorm v1.25.10 // indirect
 )

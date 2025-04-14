@@ -3,6 +3,8 @@ package app
 import (
 	"hash/fnv"
 	"strconv"
+
+	"github.com/hashicorp/go-uuid"
 )
 
 // hash
@@ -13,4 +15,8 @@ func Hash(s string) string {
 		return ""
 	}
 	return strconv.Itoa(int(h.Sum32()))
+}
+
+func GetNewUserID() (string, error) {
+	return uuid.GenerateUUID()
 }

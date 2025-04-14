@@ -1,29 +1,12 @@
 package middware
 
 import (
-	"github.com/VicShved/shorturl/internal/logger"
-	"go.uber.org/zap"
 	"net/http"
 	"time"
-)
 
-//var Log *zap.Logger = zap.NewNop()
-//
-//func InitLogger(level string) error {
-//	lvl, err := zap.ParseAtomicLevel(level)
-//	if err != nil {
-//		return err
-//	}
-//	cfg := zap.NewProductionConfig()
-//	cfg.Level = lvl
-//	log, err := cfg.Build()
-//	if err != nil {
-//		return err
-//	}
-//	Log = log
-//	defer Log.Sync()
-//	return nil
-//}
+	"github.com/VicShved/shorturl/internal/logger"
+	"go.uber.org/zap"
+)
 
 type responseData struct {
 	status int

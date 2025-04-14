@@ -14,6 +14,7 @@ type Element struct {
 	ID       string `json:"id,omitempty"`
 	Short    string `json:"short_url"`
 	Original string `json:"original_url"`
+	UserID   string `json:"user_id,omitempty`
 }
 
 type Consumer struct {
@@ -58,7 +59,7 @@ func InitFromFile(filename string, storage *RepoInterface) error {
 		return err
 	}
 	for elem != nil {
-		err = (*storage).Save(elem.Short, elem.Original)
+		err = (*storage).Save(elem.Short, elem.Original, elem.UserID)
 		if err != nil {
 			return err
 		}
@@ -99,9 +100,9 @@ type FileRepository struct {
 	Producer *Producer
 }
 
-func GetFileRepository(mp *map[string]string, filenme string) *FileRepository {
+func GetFileRepository(filenme string) *FileRepository {
 	repo := &FileRepository{
-		sr:       GetMemRepository(mp),
+		sr:       GetMemRepository(),
 		Filename: filenme,
 	}
 	repo.InitFromFile()
@@ -119,23 +120,23 @@ func (r *FileRepository) InitSaveFile() error {
 	return nil
 }
 
-func (r FileRepository) Save(short, original string) error {
-	_, ok := r.sr.Read(short)
+func (r FileRepository) Save(short, original string, userID string) error {
+	_, ok := r.sr.Read(short, userID)
 	if !ok {
 		if r.Producer != nil {
-			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original))
+			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original), zap.String("userID", userID))
 			id := r.sr.Len() + 1
-			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original})
+			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original, UserID: userID})
 			if err != nil {
 				return err
 			}
 		}
 	}
-	return r.sr.Save(short, original)
+	return r.sr.Save(short, original, userID)
 }
 
-func (r FileRepository) Read(short string) (string, bool) {
-	return (*r.sr).Read(short)
+func (r FileRepository) Read(short string, userID string) (string, bool) {
+	return (*r.sr).Read(short, userID)
 }
 
 func (r FileRepository) Ping() error {
@@ -146,9 +147,9 @@ func (r FileRepository) Len() int {
 	return r.sr.Len()
 }
 
-func (r FileRepository) Batch(data *[]KeyLongURLStr) error {
+func (r FileRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
-		err := r.Save(element.Key, element.LongURL)
+		err := r.Save(element.Key, element.LongURL, userID)
 		if err != nil {
 			return err
 		}
@@ -168,7 +169,7 @@ func (r *FileRepository) InitFromFile() error {
 		return err
 	}
 	for elem != nil {
-		err = (*r).Save(elem.Short, elem.Original)
+		err = (*r).Save(elem.Short, elem.Original, elem.UserID)
 		if err != nil {
 			return err
 		}

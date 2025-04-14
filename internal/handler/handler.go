@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
@@ -48,6 +49,9 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
+	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
+
 	w.Header().Set("Content-Type", "application/json")
 	defer r.Body.Close()
 	urlbytes, _ := io.ReadAll(r.Body)
@@ -58,7 +62,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	newurl, key := h.serv.GetShortURL(&indata.URL)
 
-	err = h.serv.Save(*key, indata.URL)
+	err = h.serv.Save(*key, indata.URL, userID)
 
 	if err != nil && errors.Is(err, repository.ErrPKConflict) {
 		w.WriteHeader(http.StatusConflict)
@@ -83,13 +87,15 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "text/plain")
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	url := string(urlBytes)
 	newurl, key := h.serv.GetShortURL(&url)
-	err := h.serv.Save(*key, url)
+	err := h.serv.Save(*key, url, userID)
 
 	if err != nil && errors.Is(err, repository.ErrPKConflict) {
 		w.WriteHeader(http.StatusConflict)
@@ -102,11 +108,13 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	urlstr := chi.URLParam(r, "key")
 	//fmt.Println("urlstr =", urlstr)
 
-	url, exists := h.serv.Read(urlstr)
+	url, exists := h.serv.Read(urlstr, userID)
 	//fmt.Println("exists = ", exists)
 
 	if !exists {
@@ -120,6 +128,8 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(app.ContextUserIDKey)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	err := h.serv.Ping()
 	if err != nil {
@@ -130,6 +140,9 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(app.ContextUserIDKey).(string)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
+
 	var indata []service.BatchReqJSON
 	w.Header().Set("Content-Type", "application/json")
 	urlbytes, _ := io.ReadAll(r.Body)
@@ -140,7 +153,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	results, err := h.serv.Batch(&indata)
+	results, err := h.serv.Batch(&indata, userID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -24,12 +24,12 @@ type ShortenService struct {
 	baseurl string
 }
 
-func (s *ShortenService) Save(key string, value string) error {
-	return s.repo.Save(key, value)
+func (s *ShortenService) Save(key string, value string, userID string) error {
+	return s.repo.Save(key, value, userID)
 }
 
-func (s *ShortenService) Read(key string) (string, bool) {
-	return s.repo.Read(key)
+func (s *ShortenService) Read(key string, userID string) (string, bool) {
+	return s.repo.Read(key, userID)
 }
 
 func (s *ShortenService) Ping() error {
@@ -40,7 +40,7 @@ func (s *ShortenService) Len() int {
 	return s.repo.Len()
 }
 
-func (s *ShortenService) Batch(indata *[]BatchReqJSON) ([]BatchRespJSON, error) {
+func (s *ShortenService) Batch(indata *[]BatchReqJSON, userID string) ([]BatchRespJSON, error) {
 	var results []BatchRespJSON
 	var repodata []repository.KeyLongURLStr
 	// Prepare results & data for repo
@@ -56,7 +56,7 @@ func (s *ShortenService) Batch(indata *[]BatchReqJSON) ([]BatchRespJSON, error) 
 	}
 
 	// batch on repo layer
-	err := s.repo.Batch(&repodata)
+	err := s.repo.Batch(&repodata, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (s *ShortenService) Batch(indata *[]BatchReqJSON) ([]BatchRespJSON, error) 
 }
 
 func (s *ShortenService) GetShortURL(longURL *string) (*string, *string) {
-	key := app.Hash(*longURL)
+	key := app.Hash(string(*longURL))
 	newurl := (*s).baseurl + "/" + key
 	return &newurl, &key
 
