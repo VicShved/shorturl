@@ -36,14 +36,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		//  если нет куки, то создаю новый
 		if err == http.ErrNoCookie {
 			logger.Log.Debug("ErrNoCookie")
-			userID, _ = app.GetNewUserID()
+			userID, _ = app.GetNewUUID()
 			setAuthCook(w, &userID)
 		} else {
 			token, userID, _ = parseTokenUserID(cook.Value)
 			// Если токен не валидный,  то создаю нвый userID
 			if !token.Valid {
 				logger.Log.Debug("Not valid token")
-				userID, _ = app.GetNewUserID()
+				userID, _ = app.GetNewUUID()
 				setAuthCook(w, &userID)
 			}
 		}
