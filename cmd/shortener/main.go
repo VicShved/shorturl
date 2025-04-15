@@ -44,9 +44,9 @@ func main() {
 
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
+		middware.AuthMiddleware,
 		middware.Logger,
 		middware.GzipMiddleware,
-		middware.AuthMiddleware,
 	}
 
 	//	Create Router
