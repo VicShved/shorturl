@@ -84,7 +84,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
-	logger.Log.Info("", zap.String("url", indata.URL), zap.String("response", string(resp)))
+	logger.Log.Debug("", zap.String("url", indata.URL), zap.String("response", string(resp)))
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +149,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	urlbytes, _ := io.ReadAll(r.Body)
 	defer r.Body.Close()
 	err := json.Unmarshal(urlbytes, &indata)
-	// logger.Log.Info("indata", zap.Any("len", indata))
+	// logger.Log.Debug("indata", zap.Any("len", indata))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -172,7 +172,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
-	logger.Log.Info("Batch handled", zap.String("response", string(resp)))
+	logger.Log.Debug("Batch handled", zap.String("response", string(resp)))
 }
 
 func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {

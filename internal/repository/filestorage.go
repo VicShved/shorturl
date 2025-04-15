@@ -85,7 +85,7 @@ func NewProducer(filename string) (*Producer, error) {
 
 func (p *Producer) WriteElement(elem *Element) error {
 	data, err := json.Marshal(*elem)
-	logger.Log.Info("WriteElement", zap.String("data", string(data)))
+	logger.Log.Debug("WriteElement", zap.String("data", string(data)))
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (r FileRepository) Save(short, original string, userID string) error {
 	_, ok := r.sr.Read(short, userID)
 	if !ok {
 		if r.Producer != nil {
-			logger.Log.Info("Save to FILE", zap.String("short", short), zap.String("original", original), zap.String("userID", userID))
+			logger.Log.Debug("Save to FILE", zap.String("short", short), zap.String("original", original), zap.String("userID", userID))
 			id := r.sr.Len() + 1
 			err := r.Producer.WriteElement(&Element{ID: strconv.Itoa(id), Short: short, Original: original, UserID: userID})
 			if err != nil {
@@ -162,7 +162,7 @@ func (r FileRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 }
 
 func (r *FileRepository) InitFromFile() error {
-	logger.Log.Info("InitFromFile", zap.String("filename", r.Filename))
+	logger.Log.Debug("InitFromFile", zap.String("filename", r.Filename))
 	consumer, err := NewConsumer(r.Filename)
 	if err != nil {
 		return err
