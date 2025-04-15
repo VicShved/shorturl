@@ -63,7 +63,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	}
 	newurl, key := h.serv.GetShortURLFromLong(&indata.URL)
 
-	err = h.serv.Save(*key, indata.URL, string(userID))
+	err = h.serv.Save(*key, indata.URL, userID)
 
 	if err != nil && errors.Is(err, repository.ErrPKConflict) {
 		w.WriteHeader(http.StatusConflict)
@@ -96,7 +96,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	urlBytes, _ := io.ReadAll(r.Body)
 	url := string(urlBytes)
 	newurl, key := h.serv.GetShortURLFromLong(&url)
-	err := h.serv.Save(*key, url, string(userID))
+	err := h.serv.Save(*key, url, userID)
 
 	if err != nil && errors.Is(err, repository.ErrPKConflict) {
 		w.WriteHeader(http.StatusConflict)
@@ -115,7 +115,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	urlstr := chi.URLParam(r, "key")
 	//fmt.Println("urlstr =", urlstr)
 
-	url, exists := h.serv.Read(urlstr, string(userID))
+	url, exists := h.serv.Read(urlstr, userID)
 	//fmt.Println("exists = ", exists)
 
 	if !exists {
@@ -154,7 +154,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	results, err := h.serv.Batch(&indata, string(userID))
+	results, err := h.serv.Batch(&indata, userID)
 	if err != nil && errors.Is(err, repository.ErrPKConflict) {
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -180,7 +180,7 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "application/json")
-	outdata, err := h.serv.GetUserURLs(string(userID))
+	outdata, err := h.serv.GetUserURLs(userID)
 	if err != nil {
 		logger.Log.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -189,20 +189,22 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 
 	if len(*outdata) == 0 {
 		w.WriteHeader(http.StatusNoContent)
+		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	resp, err := json.Marshal(outdata)
 	if err != nil {
 		logger.Log.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	lenth, err := w.Write(resp)
 	if err != nil {
 		logger.Log.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
 }
