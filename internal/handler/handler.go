@@ -186,6 +186,10 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(*outdata) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+	}
+
 	resp, err := json.Marshal(outdata)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
