@@ -15,9 +15,14 @@ type CustClaims struct {
 	UserID string
 }
 
+type contextKey int
+
+const (
+	ContextUser contextKey = iota
+)
+
 var AuthorizationCookName = "Authorization"
 var SigningMethod = jwt.SigningMethodHS512
-var ContextUser = "User"
 
 func GetJWTTokenString(userID *string) (string, error) {
 	claim := CustClaims{
