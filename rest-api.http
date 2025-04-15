@@ -1,7 +1,7 @@
 POST http://localhost:8080
 Content-Type: text/plain
 
-https://rbc.ru
+https://rbc.rur
 
 ###
 POST http://localhost:8080

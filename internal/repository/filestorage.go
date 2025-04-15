@@ -121,7 +121,7 @@ func (r *FileRepository) InitSaveFile() error {
 }
 
 func (r FileRepository) Save(short, original string, userID string) error {
-	_, ok := r.sr.Read(short, userID)
+	_, ok := r.sr.ReadWithUser(short, userID)
 	if !ok {
 		if r.Producer != nil {
 			logger.Log.Debug("Save to FILE", zap.String("short", short), zap.String("original", original), zap.String("userID", userID))
