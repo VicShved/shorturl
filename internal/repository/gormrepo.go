@@ -102,14 +102,21 @@ func (r GormRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	result := r.DB.WithContext(ctx).Create(&rows)
-	return result.Error
+	if result.Error != nil {
+		// проверяем, что ошибка сигнализирует о потенциальном нарушении целостности данных
+		var pgErr *pgconn.PgError
+		if errors.As(result.Error, &pgErr) && pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
+			return ErrPKConflict
+		}
+	}
+	return nil
 }
 
 func (r GormRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	var rows []KeyOriginalURL
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	result := r.DB.WithContext(ctx).Select("Short", "Original").Where("UserID = ?", userID).Find(&rows)
+	result := r.DB.WithContext(ctx).Select("Key", "Original").Where("user_id = ?", userID).Find(&rows)
 	if result.Error != nil {
 		return nil, result.Error
 	}

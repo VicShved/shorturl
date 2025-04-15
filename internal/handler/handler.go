@@ -155,8 +155,8 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	results, err := h.serv.Batch(&indata, string(userID))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	if err != nil && errors.Is(err, repository.ErrPKConflict) {
+		w.WriteHeader(http.StatusConflict)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
@@ -179,6 +179,7 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
+	w.Header().Set("Content-Type", "application/json")
 	outdata, err := h.serv.GetUserURLs(string(userID))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
