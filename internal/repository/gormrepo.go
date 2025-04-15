@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type ShortOriginalURL struct {
-	Short    string `json:"short_url" gorm:"primaryKey;size:32"`
+type KeyOriginalURL struct {
+	Key      string `json:"short_url" gorm:"primaryKey;size:32"`
 	Original string `json:"original_url"`
 	UserID   string `json:"user_id" gorm:"primaryKey;size:36"`
 }
@@ -44,14 +44,14 @@ func GetGormRepo(dns string) (*GormRepository, error) {
 func (r *GormRepository) Migrate() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	err := r.DB.WithContext(ctx).AutoMigrate(&ShortOriginalURL{})
+	err := r.DB.WithContext(ctx).AutoMigrate(&KeyOriginalURL{})
 	return err
 }
 
 func (r GormRepository) Save(short string, original string, userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	row := ShortOriginalURL{Short: short, Original: original, UserID: userID}
+	row := KeyOriginalURL{Key: short, Original: original, UserID: userID}
 	result := r.DB.WithContext(ctx).Create(&row)
 	if result.Error != nil {
 		// проверяем, что ошибка сигнализирует о потенциальном нарушении целостности данных
@@ -66,7 +66,7 @@ func (r GormRepository) Save(short string, original string, userID string) error
 func (r GormRepository) Read(short string, userID string) (string, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
-	row := ShortOriginalURL{}
+	row := KeyOriginalURL{}
 	result := r.DB.WithContext(ctx).First(&row, short, userID)
 
 	if result.Error != nil {
@@ -80,7 +80,7 @@ func (r GormRepository) Len() int {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	var count int64
-	result := r.DB.WithContext(ctx).Model(&ShortOriginalURL{}).Count(&count)
+	result := r.DB.WithContext(ctx).Model(&KeyOriginalURL{}).Count(&count)
 
 	if result.Error != nil {
 		return 0
@@ -95,12 +95,23 @@ func (r GormRepository) Ping() error {
 }
 
 func (r GormRepository) Batch(data *[]KeyLongURLStr, userID string) error {
-	var rows []ShortOriginalURL
+	var rows []KeyOriginalURL
 	for _, element := range *data {
-		rows = append(rows, ShortOriginalURL{Short: element.Key, Original: element.LongURL, UserID: userID})
+		rows = append(rows, KeyOriginalURL{Key: element.Key, Original: element.LongURL, UserID: userID})
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	result := r.DB.WithContext(ctx).Create(&rows)
 	return result.Error
+}
+
+func (r GormRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
+	var rows []KeyOriginalURL
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	result := r.DB.WithContext(ctx).Select("Short", "Original").Where("UserID = ?", userID).Find(&rows)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &rows, nil
 }

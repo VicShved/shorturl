@@ -16,9 +16,11 @@ type BatchRespJSON struct {
 	ShortURL      string `json:"short_url"`
 }
 
-//	type Service struct {
-//		RepoInterface
-//	}
+type UserURLRespJSON struct {
+	ShortURL    string `json:"short_url"`
+	OriginalURL string `'json:"original_url"`
+}
+
 type ShortenService struct {
 	repo    repository.RepoInterface
 	baseurl string
@@ -45,7 +47,7 @@ func (s *ShortenService) Batch(indata *[]BatchReqJSON, userID string) ([]BatchRe
 	var repodata []repository.KeyLongURLStr
 	// Prepare results & data for repo
 	for _, element := range *indata {
-		shorturl, key := s.GetShortURL(&element.OriginalURL)
+		shorturl, key := s.GetShortURLFromLong(&element.OriginalURL)
 		res := BatchRespJSON{
 			CorrelationID: element.CorrelationID,
 			ShortURL:      *shorturl,
@@ -64,11 +66,27 @@ func (s *ShortenService) Batch(indata *[]BatchReqJSON, userID string) ([]BatchRe
 	return results, nil
 }
 
-func (s *ShortenService) GetShortURL(longURL *string) (*string, *string) {
-	key := app.Hash(string(*longURL))
-	newurl := (*s).baseurl + "/" + key
-	return &newurl, &key
+func (s *ShortenService) GetUserURLs(userID string) (*[]UserURLRespJSON, error) {
+	var results []UserURLRespJSON
+	localResult, err := s.repo.GetUserUrls(userID)
+	if err != nil {
+		return nil, err
+	}
+	for _, elem := range *localResult {
+		results = append(results, UserURLRespJSON{ShortURL: *s.GetShortURLFromKey(elem.Key), OriginalURL: elem.Original})
+	}
+	return &results, nil
+}
 
+func (s *ShortenService) GetShortURLFromKey(key string) *string {
+	newurl := (*s).baseurl + "/" + key
+	return &newurl
+}
+
+func (s *ShortenService) GetShortURLFromLong(longURL *string) (*string, *string) {
+	key := app.Hash(string(*longURL))
+	newurl := s.GetShortURLFromKey(key)
+	return newurl, &key
 }
 
 func GetService(repo repository.RepoInterface, baseurl string) *ShortenService {

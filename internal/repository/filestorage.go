@@ -157,6 +157,10 @@ func (r FileRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	return nil
 }
 
+func (r FileRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
+	return r.sr.GetUserUrls(userID)
+}
+
 func (r *FileRepository) InitFromFile() error {
 	logger.Log.Info("InitFromFile", zap.String("filename", r.Filename))
 	consumer, err := NewConsumer(r.Filename)

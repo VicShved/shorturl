@@ -51,3 +51,15 @@ func (s MemRepiository) Batch(data *[]KeyLongURLStr, userID string) error {
 	}
 	return nil
 }
+
+func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
+	var results []KeyOriginalURL
+	uMap, ok := (*s.userMap)[userID]
+	if !ok {
+		return &results, nil
+	}
+	for key, original := range *uMap {
+		results = append(results, KeyOriginalURL{Key: key, Original: original})
+	}
+	return &results, nil
+}

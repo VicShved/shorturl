@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func setAuthCook(w http.ResponseWriter, userID *app.TypeUserID) {
+func setAuthCook(w http.ResponseWriter, userID *string) {
 
 	token, _ := app.GetJWTTokenString(userID)
 	http.SetCookie(w, &http.Cookie{
@@ -19,18 +19,18 @@ func setAuthCook(w http.ResponseWriter, userID *app.TypeUserID) {
 	})
 }
 
-func parseTokenUserID(tokenStr string) (*jwt.Token, app.TypeUserID, error) {
+func parseTokenUserID(tokenStr string) (*jwt.Token, string, error) {
 	claims := &app.CustClaims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(app.ServerConfig.SecretKey), nil
 	})
-	return token, (*claims).User, err
+	return token, (*claims).UserID, err
 }
 
 // auth middleware
 func AuthMiddleware(next http.Handler) http.Handler {
 	authFunc := func(w http.ResponseWriter, r *http.Request) {
-		var userID app.TypeUserID
+		var userID string
 		var token *jwt.Token
 		cook, err := r.Cookie(app.AuthorizationCookName)
 		//  если нет куки, то создаю новый
@@ -48,7 +48,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 		}
 		// Если кука не содержит ид пользователя, то возвращаю 401
-		if userID == "" {
+		if string(userID) == "" {
 			logger.Log.Debug("Empty userID")
 			w.WriteHeader(http.StatusUnauthorized)
 			return

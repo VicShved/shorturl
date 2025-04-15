@@ -15,6 +15,7 @@ type RepoInterface interface {
 	Ping() error
 	Len() int
 	Batch(data *[]KeyLongURLStr, userID string) error
+	GetUserUrls(userID string) (*[]KeyOriginalURL, error)
 }
 
 var ErrPKConflict = errors.New("PK conflict")

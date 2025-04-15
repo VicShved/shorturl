@@ -44,12 +44,13 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	router.Post("/api/shorten/batch", h.HandleBatchPOST)
 	router.Get("/{key}", h.HandleGET)
 	router.Get("/ping", h.PingDB)
+	router.Get("/api/user/urls", h.GetUserURLs)
 	return router
 }
 
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
-	userID := r.Context().Value(app.ContextUser).(app.TypeUserID)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "application/json")
@@ -60,7 +61,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	newurl, key := h.serv.GetShortURL(&indata.URL)
+	newurl, key := h.serv.GetShortURLFromLong(&indata.URL)
 
 	err = h.serv.Save(*key, indata.URL, string(userID))
 
@@ -87,14 +88,14 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUser).(app.TypeUserID)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "text/plain")
 	defer r.Body.Close()
 	urlBytes, _ := io.ReadAll(r.Body)
 	url := string(urlBytes)
-	newurl, key := h.serv.GetShortURL(&url)
+	newurl, key := h.serv.GetShortURLFromLong(&url)
 	err := h.serv.Save(*key, url, string(userID))
 
 	if err != nil && errors.Is(err, repository.ErrPKConflict) {
@@ -108,7 +109,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUser).(app.TypeUserID)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	urlstr := chi.URLParam(r, "key")
@@ -128,7 +129,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUser).(app.TypeUserID)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	err := h.serv.Ping()
@@ -140,7 +141,7 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(app.ContextUser).(app.TypeUserID)
+	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	var indata []service.BatchReqJSON
@@ -172,4 +173,28 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
 	logger.Log.Info("Batch handled", zap.String("response", string(resp)))
+}
+
+func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(app.ContextUser).(string)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
+
+	outdata, err := h.serv.GetUserURLs(string(userID))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	resp, err := json.Marshal(outdata)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	lenth, err := w.Write(resp)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Length", strconv.Itoa(lenth))
 }

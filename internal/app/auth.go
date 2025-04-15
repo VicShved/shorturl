@@ -1,29 +1,27 @@
 package app
 
 import (
-	"fmt"
-
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type TypeUserID string
+// type TypeUserID string
 
-func (t TypeUserID) String() string {
-	return fmt.Sprint(string(t))
-}
+// func (t TypeUserID) String() string {
+// 	return fmt.Sprint(string(t))
+// }
 
 type CustClaims struct {
 	jwt.RegisteredClaims
-	User TypeUserID
+	UserID string
 }
 
 var AuthorizationCookName = "AuthorizationCook"
 var SigningMethod = jwt.SigningMethodHS512
 var ContextUser = "User"
 
-func GetJWTTokenString(userID *TypeUserID) (string, error) {
+func GetJWTTokenString(userID *string) (string, error) {
 	claim := CustClaims{
-		User: *userID,
+		UserID: *userID,
 	}
 	token := jwt.NewWithClaims(SigningMethod, claim)
 	tokenStr, err := token.SignedString([]byte(ServerConfig.SecretKey))
