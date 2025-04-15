@@ -21,7 +21,7 @@ func GetServerConfig() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.BaseURL, "b", "http://localhost:8080", "result base url")
 	flag.StringVar(&ServerConfig.FileStoragePath, "f", "", "file storage path")
 	// host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable
-	flag.StringVar(&ServerConfig.DBDSN, "d", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable", "DataBase DSN")
+	flag.StringVar(&ServerConfig.DBDSN, "d", "", "DataBase DSN")
 	flag.StringVar(&ServerConfig.SecretKey, "s", "VeryImpotantSecretKey.YesYes", "Secret key")
 	flag.StringVar(&ServerConfig.LogLevel, "l", "INFO", "Log level")
 	flag.Parse()
