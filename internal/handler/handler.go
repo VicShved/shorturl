@@ -104,7 +104,6 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 	}
 
-	//fmt.Println("newurl = ", newurl)
 	w.Write([]byte(*newurl))
 }
 

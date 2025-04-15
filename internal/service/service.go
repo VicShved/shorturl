@@ -18,7 +18,7 @@ type BatchRespJSON struct {
 
 type UserURLRespJSON struct {
 	ShortURL    string `json:"short_url"`
-	OriginalURL string `'json:"original_url"`
+	OriginalURL string `json:"original_url"`
 }
 
 type ShortenService struct {
