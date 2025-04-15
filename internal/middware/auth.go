@@ -48,7 +48,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 		}
 		// Если кука не содержит ид пользователя, то возвращаю 401
-		if string(userID) == "" {
+		if userID == "" {
 			logger.Log.Debug("Empty userID")
 			w.WriteHeader(http.StatusUnauthorized)
 			return

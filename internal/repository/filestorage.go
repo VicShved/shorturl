@@ -14,7 +14,7 @@ type Element struct {
 	ID       string `json:"id,omitempty"`
 	Short    string `json:"short_url"`
 	Original string `json:"original_url"`
-	UserID   string `json:"user_id,omitempty`
+	UserID   string `json:"user_id"`
 }
 
 type Consumer struct {

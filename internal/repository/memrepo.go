@@ -30,7 +30,11 @@ func (s MemRepiository) Save(key string, value string, userID string) error {
 }
 
 func (s MemRepiository) Read(key string, userID string) (string, bool) {
-	result, ok := (*s.mp)[key]
+	urlMap, ok := (*s.userMap)[userID]
+	if !ok {
+		return "", ok
+	}
+	result, ok := (*urlMap)[key]
 	return result, ok
 }
 
