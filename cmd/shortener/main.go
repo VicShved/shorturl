@@ -10,6 +10,7 @@ import (
 	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -27,7 +28,7 @@ func main() {
 			panic(err)
 		}
 		repo = dbrepo
-		logger.Log.Info("Connect to db")
+		logger.Log.Info("Connect to db", zap.String("DSN", config.DBDSN))
 	} else if len(config.FileStoragePath) > 0 {
 		//  set file-mem repo
 		repo = repository.GetFileRepository(config.FileStoragePath)

@@ -182,6 +182,7 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	outdata, err := h.serv.GetUserURLs(string(userID))
 	if err != nil {
+		logger.Log.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -192,11 +193,13 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := json.Marshal(outdata)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	lenth, err := w.Write(resp)
 	if err != nil {
+		logger.Log.Error(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
