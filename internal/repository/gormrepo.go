@@ -67,7 +67,7 @@ func (r GormRepository) Read(short string, userID string) (string, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	row := KeyOriginalURL{}
-	result := r.DB.WithContext(ctx).First(&row, short, userID)
+	result := r.DB.WithContext(ctx).First(&row, short) // , userID
 
 	if result.Error != nil {
 		return "", false
