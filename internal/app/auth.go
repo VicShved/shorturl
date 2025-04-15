@@ -15,7 +15,7 @@ type CustClaims struct {
 	UserID string
 }
 
-var AuthorizationCookName = "AuthorizationCook"
+var AuthorizationCookName = "Authorization"
 var SigningMethod = jwt.SigningMethodHS512
 var ContextUser = "User"
 
