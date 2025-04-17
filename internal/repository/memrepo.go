@@ -78,6 +78,6 @@ func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	return &results, nil
 }
 
-func (m MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
+func (s MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }

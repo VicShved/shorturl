@@ -161,7 +161,7 @@ func (r FileRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	return r.sr.GetUserUrls(userID)
 }
 
-func (r *FileRepository) InitFromFile() error {
+func (r FileRepository) InitFromFile() error {
 	logger.Log.Debug("InitFromFile", zap.String("filename", r.Filename))
 	consumer, err := NewConsumer(r.Filename)
 	if err != nil {
@@ -173,7 +173,7 @@ func (r *FileRepository) InitFromFile() error {
 		return err
 	}
 	for elem != nil {
-		err = (*r).Save(elem.Short, elem.Original, elem.UserID)
+		err = r.Save(elem.Short, elem.Original, elem.UserID)
 		if err != nil {
 			return err
 		}
@@ -185,6 +185,6 @@ func (r *FileRepository) InitFromFile() error {
 	return nil
 }
 
-func (f FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
+func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }

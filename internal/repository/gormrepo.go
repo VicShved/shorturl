@@ -72,13 +72,20 @@ func (r GormRepository) Read(short string, userID string) (string, bool, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	row := KeyOriginalURL{}
-	result := r.DB.WithContext(ctx).Where(KeyOriginalURL{Key: short, UserID: userID}).First(&row) //
-
+	result := r.DB.WithContext(ctx).Where(KeyOriginalURL{Key: short}).First(&row) //
 	if result.Error != nil {
 		return "", false, false
 	}
+	original := row.Original
+
+	result = r.DB.WithContext(ctx).Where(KeyOriginalURL{Key: short, UserID: userID}).First(&row)
+	if result.Error != nil {
+		logger.Log.Error("Err", zap.String("err", result.Error.Error()))
+		return original, true, false
+	}
+
 	logger.Log.Debug("Read row result", zap.Any("row", row))
-	return row.Original, true, row.IsDeleted
+	return original, true, row.IsDeleted
 }
 
 func (r GormRepository) Len() int {
