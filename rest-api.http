@@ -4,18 +4,29 @@ Content-Type: text/plain
 https://rbc.ru
 
 ###
-GET http://localhost:8080/1806126526
+POST http://localhost:8080
+Content-Type: text/plain
+Set-Cookie: AuthorizationCook=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJhZWQxZGM2Zi0yYjQ4LTM5NDEtMzMzNi03NTIzOTdkYmJkNzgifQ.EMZbLSGiUJg-RlsvVN-3IUDTV6Ehhj3jcFj5VVwP600TBaJcvaOmPgVw0mCIZxDEMJzZ3QJAuL_jVYE-Tpl0Kw
+
+http://kppq1xav7orld.net/fpyt64drf7y3ak/oeh3td4bqfi
+
+###
+POST http://localhost:8080
 Content-Type: text/plain
 
 ###
 GET http://localhost:8080/1806126526
+Content-Type: text/plain
+
+###
+GET http://localhost:8080/1147107364
 Content-Type: text/html
 
 ###
 POST http://localhost:8080/api/shorten
 Content-Type: application/json
 
-{"url":"https://rbc.ru"}
+{"url":"https://rbc.rur"}
 
 ###
 GET http://localhost:8080/ping
@@ -30,3 +41,11 @@ Content-Type: application/json
 ###
 GET http://localhost:8080/2105327019
 Content-Type: text/html
+
+###
+GET http://localhost:8080/api/user/urls
+
+###
+DELETE http://localhost:8080/api/user/urls
+
+["1806126526"]

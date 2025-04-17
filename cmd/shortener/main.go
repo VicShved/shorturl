@@ -10,39 +10,31 @@ import (
 	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
+	"go.uber.org/zap"
 )
 
 func main() {
-	// Init custom logger
-	logger.InitLogger("INFO")
 	// Get app config
 	var config = app.GetServerConfig()
+	// Init custom logger
+	logger.InitLogger(config.LogLevel)
 
 	// repo choice
 	var repo repository.RepoInterface
 	// set db repo
 	if len(config.DBDSN) > 0 {
-		// postgres driver
-		// pgdriver, err := sql.Open("pgx", config.DBDSN)
-		// if err != nil {
-		// 	panic(err)
-		// }
-		// defer pgdriver.Close()
-		// dbrepo, err := repository.GetDBRepository(pgdriver)
-		// if err != nil {
-		// 	panic(err)
-		// }
-		dbrepo, _ := repository.GetGormRepo(config.DBDSN)
+		dbrepo, err := repository.GetGormRepo(config.DBDSN)
+		if err != nil {
+			panic(err)
+		}
 		repo = dbrepo
-		logger.Log.Info("Connect to db")
+		logger.Log.Info("Connect to db", zap.String("DSN", config.DBDSN))
 	} else if len(config.FileStoragePath) > 0 {
 		//  set file-mem repo
-		memstorage := app.GetStorage()
-		repo = repository.GetFileRepository(memstorage, config.FileStoragePath)
+		repo = repository.GetFileRepository(config.FileStoragePath)
 	} else {
 		// set  mem repo
-		memstorage := app.GetStorage()
-		repo = repository.GetMemRepository(memstorage)
+		repo = repository.GetMemRepository()
 	}
 
 	// Bussiness layer (empty)
@@ -52,6 +44,7 @@ func main() {
 
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
+		middware.AuthMiddleware,
 		middware.Logger,
 		middware.GzipMiddleware,
 	}
