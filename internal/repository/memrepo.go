@@ -29,23 +29,23 @@ func (s MemRepiository) Save(key string, value string, userID string) error {
 	return nil
 }
 
-func (s MemRepiository) Read(key string, userID string) (string, bool) {
+func (s MemRepiository) Read(key string, userID string) (string, bool, bool) {
 	result, ok := (*s.mp)[key]
 	// urlMap, ok := (*s.userMap)[userID]
 	// if !ok {
 	// 	return "", ok
 	// }
 	// result, ok := (*urlMap)[key]
-	return result, ok
+	return result, ok, false
 }
 
-func (s MemRepiository) ReadWithUser(key string, userID string) (string, bool) {
+func (s MemRepiository) ReadWithUser(key string, userID string) (string, bool, bool) {
 	urlMap, ok := (*s.userMap)[userID]
 	if !ok {
-		return "", ok
+		return "", ok, false
 	}
 	result, ok := (*urlMap)[key]
-	return result, ok
+	return result, ok, false
 }
 
 func (s MemRepiository) Len() int {
@@ -76,4 +76,8 @@ func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 		results = append(results, KeyOriginalURL{Key: key, Original: original})
 	}
 	return &results, nil
+}
+
+func (m MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
+	return nil // TODO need realizaion
 }

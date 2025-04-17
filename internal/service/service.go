@@ -30,7 +30,7 @@ func (s *ShortenService) Save(key string, value string, userID string) error {
 	return s.repo.Save(key, value, userID)
 }
 
-func (s *ShortenService) Read(key string, userID string) (string, bool) {
+func (s *ShortenService) Read(key string, userID string) (string, bool, bool) {
 	return s.repo.Read(key, userID)
 }
 
@@ -76,6 +76,11 @@ func (s *ShortenService) GetUserURLs(userID string) (*[]UserURLRespJSON, error) 
 		results = append(results, UserURLRespJSON{ShortURL: *s.GetShortURLFromKey(elem.Key), OriginalURL: elem.Original})
 	}
 	return &results, nil
+}
+
+func (s *ShortenService) DelUserURLs(shortURLs *[]string, userID string) error {
+	err := s.repo.DelUserUrls(shortURLs, userID)
+	return err
 }
 
 func (s *ShortenService) GetShortURLFromKey(key string) *string {

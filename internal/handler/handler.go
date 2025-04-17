@@ -45,6 +45,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	router.Get("/{key}", h.HandleGET)
 	router.Get("/ping", h.PingDB)
 	router.Get("/api/user/urls", h.GetUserURLs)
+	router.Delete("/api/user/urls", h.DelUserURLs)
 	return router
 }
 
@@ -114,11 +115,15 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	urlstr := chi.URLParam(r, "key")
 	//fmt.Println("urlstr =", urlstr)
 
-	url, exists := h.serv.Read(urlstr, userID)
+	url, exists, isDeleted := h.serv.Read(urlstr, userID)
 	//fmt.Println("exists = ", exists)
 
 	if !exists {
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if isDeleted {
+		w.WriteHeader(http.StatusGone)
 		return
 	}
 
@@ -206,4 +211,28 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
+}
+
+func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
+	userID := r.Context().Value(app.ContextUser).(string)
+	logger.Log.Debug("Context User ", zap.Any("ID", userID))
+
+	var indata []string
+	urlbytes, _ := io.ReadAll(r.Body)
+	defer r.Body.Close()
+	err := json.Unmarshal(urlbytes, &indata)
+	logger.Log.Debug("indata", zap.Any("len", indata))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = h.serv.DelUserURLs(&indata, userID)
+	if err != nil {
+		logger.Log.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
 }

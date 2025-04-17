@@ -3,18 +3,22 @@ package repository
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
+	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 type KeyOriginalURL struct {
-	Key      string `json:"short_url" gorm:"primaryKey;size:32"`
-	Original string `json:"original_url"`
-	UserID   string `json:"user_id" gorm:"primaryKey;size:36"`
+	Key       string `json:"short_url" gorm:"primaryKey;size:32"`
+	Original  string `json:"original_url"`
+	UserID    string `json:"user_id" gorm:"primaryKey;size:36"`
+	IsDeleted bool   `json:"is_deleted" gorm:"is_deleted"`
 }
 
 type GormRepository struct {
@@ -63,17 +67,18 @@ func (r GormRepository) Save(short string, original string, userID string) error
 	return nil
 }
 
-func (r GormRepository) Read(short string, userID string) (string, bool) {
+func (r GormRepository) Read(short string, userID string) (string, bool, bool) {
+	logger.Log.Debug("Read", zap.String("UserID", userID))
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	row := KeyOriginalURL{}
-	result := r.DB.WithContext(ctx).First(&row, short) // , userID
+	result := r.DB.WithContext(ctx).Where(KeyOriginalURL{Key: short, UserID: userID}).First(&row) //
 
 	if result.Error != nil {
-		return "", false
+		return "", false, false
 	}
-
-	return row.Original, true
+	logger.Log.Debug("Read row result", zap.Any("row", row))
+	return row.Original, true, row.IsDeleted
 }
 
 func (r GormRepository) Len() int {
@@ -121,4 +126,38 @@ func (r GormRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 		return nil, result.Error
 	}
 	return &rows, nil
+}
+
+func (r GormRepository) DelUserUrls(shortURLs *[]string, userID string) error {
+	ch := make(chan string, 10)
+	defer close(ch)
+
+	var wg sync.WaitGroup
+	for _, short := range *shortURLs {
+		wg.Add(1)
+		go func(shortURL string) {
+			defer wg.Done()
+			ch <- shortURL
+		}(short)
+	}
+
+	go func(ch chan string) {
+		var shorts []string
+		for sh := range ch {
+			shorts = append(shorts, sh)
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+		defer cancel()
+		result := r.DB.WithContext(ctx).Model(
+			KeyOriginalURL{}).Where("user_id = ?", userID).Where(
+			"key IN ?", shorts,
+		).Updates(KeyOriginalURL{IsDeleted: true})
+		if result.Error != nil {
+			logger.Log.Error("Error", zap.String("Err", result.Error.Error()))
+		}
+		logger.Log.Debug("DELETE DONE", zap.Any("shorts", shorts))
+	}(ch)
+	wg.Wait()
+	logger.Log.Debug("return from Func Delete ")
+	return nil
 }

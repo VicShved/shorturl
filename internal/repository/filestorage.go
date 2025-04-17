@@ -121,7 +121,7 @@ func (r *FileRepository) InitSaveFile() error {
 }
 
 func (r FileRepository) Save(short, original string, userID string) error {
-	_, ok := r.sr.ReadWithUser(short, userID)
+	_, ok, _ := r.sr.ReadWithUser(short, userID)
 	if !ok {
 		if r.Producer != nil {
 			logger.Log.Debug("Save to FILE", zap.String("short", short), zap.String("original", original), zap.String("userID", userID))
@@ -135,7 +135,7 @@ func (r FileRepository) Save(short, original string, userID string) error {
 	return r.sr.Save(short, original, userID)
 }
 
-func (r FileRepository) Read(short string, userID string) (string, bool) {
+func (r FileRepository) Read(short string, userID string) (string, bool, bool) {
 	return (*r.sr).Read(short, userID)
 }
 
@@ -183,4 +183,8 @@ func (r *FileRepository) InitFromFile() error {
 		}
 	}
 	return nil
+}
+
+func (f FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
+	return nil // TODO need realizaion
 }
