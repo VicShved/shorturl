@@ -33,7 +33,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		var userID string
 		var token *jwt.Token
 		cook, err := r.Cookie(app.AuthorizationCookName)
-		//  если нет куки, то создаю новый
+		//  если нет куки, то создаю новую
 		if err == http.ErrNoCookie {
 			logger.Log.Debug("ErrNoCookie")
 			userID, _ = app.GetNewUUID()
@@ -54,8 +54,9 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		logger.Log.Debug("User ", zap.String("ID", string(userID)))
-		// next handler
+		// добавляю userID в контекст
 		ctx := context.WithValue(r.Context(), app.ContextUser, userID)
+		// Вызываю след.обработчик
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 	return http.HandlerFunc(authFunc)

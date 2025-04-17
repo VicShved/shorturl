@@ -51,6 +51,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
@@ -89,6 +90,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
@@ -109,6 +111,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
@@ -133,6 +136,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
@@ -145,6 +149,7 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
@@ -180,6 +185,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
@@ -214,6 +220,7 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
+	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(app.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 

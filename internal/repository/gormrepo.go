@@ -136,18 +136,22 @@ func (r GormRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 }
 
 func (r GormRepository) DelUserUrls(shortURLs *[]string, userID string) error {
+	// Создаю буферизированный канал
 	ch := make(chan string, 10)
 	defer close(ch)
 
+	// Инициализирую счетчик горутин
 	var wg sync.WaitGroup
 	for _, short := range *shortURLs {
 		wg.Add(1)
+		// Для каждого ключа запускаю горутину, которая записывает ключ в канал
 		go func(shortURL string) {
 			defer wg.Done()
 			ch <- shortURL
 		}(short)
 	}
 
+	// Запускаю горутину, которая считывает из канала ключи и далее помечает строки с данными ключами как уделенные
 	go func(ch chan string) {
 		var shorts []string
 		for sh := range ch {
@@ -164,6 +168,7 @@ func (r GormRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 		}
 		logger.Log.Debug("DELETE DONE", zap.Any("shorts", shorts))
 	}(ch)
+	// Жду пока все горутины записи в канал выполнятся
 	wg.Wait()
 	logger.Log.Debug("return from Func Delete ")
 	return nil
