@@ -134,3 +134,7 @@ func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
 	}
 	return err
 }
+
+func (r DBRepository) DeleteUserUrls(shortURLs *[]string, userID string) error {
+	return nil // TODO need realizaion
+}

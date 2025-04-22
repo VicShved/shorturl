@@ -1,6 +1,8 @@
 package repository
 
-import "errors"
+import (
+	"errors"
+)
 
 type KeyLongURLStr struct {
 	Key     string
@@ -8,11 +10,13 @@ type KeyLongURLStr struct {
 }
 
 type RepoInterface interface {
-	Save(key string, value string) error
-	Read(key string) (string, bool)
+	Save(key string, value string, userID string) error
+	Read(key string, userID string) (string, bool, bool)
 	Ping() error
 	Len() int
-	Batch(*[]KeyLongURLStr) error
+	Batch(data *[]KeyLongURLStr, userID string) error
+	GetUserUrls(userID string) (*[]KeyOriginalURL, error)
+	DelUserUrls(shortURLs *[]string, userID string) error
 }
 
 var ErrPKConflict = errors.New("PK conflict")
