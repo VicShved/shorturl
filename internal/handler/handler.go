@@ -12,6 +12,7 @@ import (
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 )
 
@@ -39,6 +40,8 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	for _, mw := range mdwr {
 		router.Use(mw)
 	}
+
+	router.Mount("/debug", middleware.Profiler())
 	router.Post("/", h.HandlePOST)
 	router.Post("/api/shorten", h.HandlePostJSON)
 	router.Post("/api/shorten/batch", h.HandleBatchPOST)
