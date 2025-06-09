@@ -230,3 +230,75 @@ func TestPostJSON(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkGet(b *testing.B) {
+
+	type want struct {
+		status         int
+		locationheader string
+		contentType    string
+	}
+	tests := []struct {
+		name    string
+		method  string
+		suffics string
+		want    want
+	}{
+		{
+			name:    "test1",
+			method:  http.MethodGet,
+			suffics: "1",
+			want: want{
+				status:         307,
+				locationheader: "http://ya.ru/",
+			},
+		},
+		{
+			name:    "test2",
+			method:  http.MethodGet,
+			suffics: "2",
+			want: want{
+				status:         307,
+				locationheader: "https://google.com/",
+			},
+		},
+		{
+			name:    "null in key",
+			method:  http.MethodGet,
+			suffics: "",
+			want: want{
+				status:         400,
+				locationheader: "https://google.com/",
+			},
+		},
+	}
+
+	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
+	serv := service.GetService(repo, "")
+	handlers := GetHandler(serv)
+	user, _ := app.GetNewUUID()
+
+	for i := 0; i < b.N; i++ {
+		for _, test := range tests {
+			if test.suffics != "" {
+				serv.Save(test.suffics, test.want.locationheader, string(user))
+			}
+			target := "/{key}"
+
+			request := httptest.NewRequest(test.method, target, nil)
+			w := httptest.NewRecorder()
+
+			rctx := chi.NewRouteContext()
+			rctx.URLParams.Add("key", test.suffics)
+			ctx := request.Context()
+			ctx = context.WithValue(ctx, chi.RouteCtxKey, rctx)
+			ctx = context.WithValue(ctx, app.ContextUser, user)
+			request = request.WithContext(ctx)
+
+			handlers.HandleGET(w, request)
+			res := w.Result()
+			res.Body.Close()
+
+		}
+	}
+}
