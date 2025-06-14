@@ -7,11 +7,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/logger"
+	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 )
 
@@ -39,6 +40,8 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	for _, mw := range mdwr {
 		router.Use(mw)
 	}
+
+	router.Mount("/debug", middleware.Profiler())
 	router.Post("/", h.HandlePOST)
 	router.Post("/api/shorten", h.HandlePostJSON)
 	router.Post("/api/shorten/batch", h.HandleBatchPOST)
@@ -52,7 +55,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "application/json")
@@ -91,7 +94,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "text/plain")
@@ -112,7 +115,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	urlstr := chi.URLParam(r, "key")
@@ -137,7 +140,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	err := h.serv.Ping()
@@ -150,7 +153,7 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	var indata []service.BatchReqJSON
@@ -186,7 +189,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	w.Header().Set("Content-Type", "application/json")
@@ -221,7 +224,7 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 
 func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
-	userID := r.Context().Value(app.ContextUser).(string)
+	userID := r.Context().Value(middware.ContextUser).(string)
 	logger.Log.Debug("Context User ", zap.Any("ID", userID))
 
 	var indata []string
