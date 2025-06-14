@@ -13,6 +13,7 @@ import (
 
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
+	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
@@ -66,7 +67,7 @@ func TestPost(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest(test.method, "/", strings.NewReader(test.url))
 			ctx := request.Context()
-			ctx = context.WithValue(ctx, app.ContextUser, user)
+			ctx = context.WithValue(ctx, middware.ContextUser, user)
 			request = request.WithContext(ctx)
 			w := httptest.NewRecorder()
 			handlers.HandlePOST(w, request)
@@ -142,7 +143,7 @@ func TestGet(t *testing.T) {
 			rctx.URLParams.Add("key", test.suffics)
 			ctx := request.Context()
 			ctx = context.WithValue(ctx, chi.RouteCtxKey, rctx)
-			ctx = context.WithValue(ctx, app.ContextUser, user)
+			ctx = context.WithValue(ctx, middware.ContextUser, user)
 			request = request.WithContext(ctx)
 
 			handlers.HandleGET(w, request)
@@ -210,7 +211,7 @@ func TestPostJSON(t *testing.T) {
 			iobbuf := bytes.NewReader([]byte(bbuf))
 			request := httptest.NewRequest(test.method, "/api/shorten", iobbuf)
 			ctx := request.Context()
-			ctx = context.WithValue(ctx, app.ContextUser, user)
+			ctx = context.WithValue(ctx, middware.ContextUser, user)
 			request = request.WithContext(ctx)
 			w := httptest.NewRecorder()
 			handlers.HandlePostJSON(w, request)
