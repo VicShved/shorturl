@@ -1,3 +1,4 @@
+// Package for handler http request
 package handler
 
 import (
@@ -52,6 +53,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	return router
 }
 
+// HandlePostJSON - POST Endpoint for short URL in  application/json content-type
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
 	// Вытаскиваю userID из контекста
@@ -92,6 +94,7 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	logger.Log.Debug("", zap.String("url", indata.URL), zap.String("response", string(resp)))
 }
 
+// HandlePost - POST Endpoint for short URL in text/plain content-type
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -113,6 +116,7 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(*newurl))
 }
 
+// HandleGET - GET Endpoint for get long URL from short URL(id)
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -138,6 +142,7 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
+// PingDB - GET Endpoint for ping database
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -151,6 +156,7 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// HandleBatchPOST - POST Endpoint for batch short URL in  application/json content-type
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -187,6 +193,7 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	logger.Log.Debug("Batch handled", zap.String("response", string(resp)))
 }
 
+// GetUserURLs - GET Endpoint for find all user short|longs URLs
 func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -222,6 +229,7 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
 }
 
+// DelUserURLs - DELETE Endpoint for delete user short|longs URLs
 func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
