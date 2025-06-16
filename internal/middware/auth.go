@@ -26,6 +26,8 @@ const (
 
 // AuthorizationCookName
 var AuthorizationCookName = "Authorization"
+
+// SigningMethod
 var SigningMethod = jwt.SigningMethodHS512
 
 // GetJWTTokenString(userID *string)
