@@ -1,3 +1,4 @@
+// middware
 package middware
 
 import (
@@ -10,12 +11,7 @@ import (
 	"go.uber.org/zap"
 )
 
-// type TypeUserID string
-
-// func (t TypeUserID) String() string {
-// 	return fmt.Sprint(string(t))
-// }
-
+// CustClaims struct
 type CustClaims struct {
 	jwt.RegisteredClaims
 	UserID string
@@ -27,9 +23,12 @@ const (
 	ContextUser contextKey = iota
 )
 
+// AuthorizationCookName
+// SigningMethod
 var AuthorizationCookName = "Authorization"
 var SigningMethod = jwt.SigningMethodHS512
 
+// GetJWTTokenString(userID *string)
 func GetJWTTokenString(userID *string) (string, error) {
 	claim := CustClaims{
 		UserID: *userID,
@@ -41,6 +40,7 @@ func GetJWTTokenString(userID *string) (string, error) {
 	}
 	return tokenStr, err
 }
+
 func setAuthCook(w http.ResponseWriter, userID *string) {
 
 	token, _ := GetJWTTokenString(userID)

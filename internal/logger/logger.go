@@ -1,11 +1,14 @@
+// logger
 package logger
 
 import (
 	"go.uber.org/zap"
 )
 
+// Log
 var Log *zap.Logger = zap.NewNop()
 
+// InitLogger func
 func InitLogger(level string) error {
 	lvl, err := zap.ParseAtomicLevel(level)
 	if err != nil {

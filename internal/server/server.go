@@ -1,3 +1,4 @@
+// server
 package server
 
 import (
@@ -14,10 +15,12 @@ import (
 	"go.uber.org/zap"
 )
 
+// Server struct
 type Server struct {
 	hTTPServer *http.Server
 }
 
+// Run(serverAddress string, router *chi.Mux)
 func (s *Server) Run(serverAddress string, router *chi.Mux) error {
 
 	s.hTTPServer = &http.Server{
@@ -25,9 +28,9 @@ func (s *Server) Run(serverAddress string, router *chi.Mux) error {
 		Handler: router,
 	}
 	return s.hTTPServer.ListenAndServe()
-
 }
 
+// ServerRun(config app.ServerConfigStruct)
 func ServerRun(config app.ServerConfigStruct) {
 	// repo choice
 	var repo repository.RepoInterface

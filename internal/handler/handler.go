@@ -17,25 +17,30 @@ import (
 	"go.uber.org/zap"
 )
 
+// type reqJSON
 type reqJSON struct {
 	URL string `json:"url"`
 }
 
+// type respJSON
 type respJSON struct {
 	Result string `json:"result"`
 }
 
+// type Handler
 type Handler struct {
 	serv    *service.ShortenService
 	baseurl string
 }
 
+// func GetHandler
 func GetHandler(serv *service.ShortenService) *Handler {
 	return &Handler{
 		serv: serv,
 	}
 }
 
+// func (h Handler) InitRouter
 func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	router := chi.NewRouter()
 	for _, mw := range mdwr {
