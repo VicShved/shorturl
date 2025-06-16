@@ -10,6 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Element struct
 type Element struct {
 	ID       string `json:"id,omitempty"`
 	Short    string `json:"short_url"`
@@ -17,11 +18,13 @@ type Element struct {
 	UserID   string `json:"user_id"`
 }
 
+// Consumer struct
 type Consumer struct {
 	file    *os.File
 	scanner *bufio.Scanner
 }
 
+// NewConsumer(filename string)
 func NewConsumer(filename string) (*Consumer, error) {
 	file, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0666)
 	if err != nil {
@@ -30,6 +33,7 @@ func NewConsumer(filename string) (*Consumer, error) {
 	return &Consumer{file: file, scanner: bufio.NewScanner(file)}, nil
 }
 
+// ReadElement()
 func (c *Consumer) ReadElement() (*Element, error) {
 	if !c.scanner.Scan() {
 		return nil, c.scanner.Err()
@@ -43,10 +47,12 @@ func (c *Consumer) ReadElement() (*Element, error) {
 	return element, nil
 }
 
+// Close() error
 func (c *Consumer) Close() error {
 	return c.file.Close()
 }
 
+// InitFromFile(filename string, storage *RepoInterface)
 func InitFromFile(filename string, storage *RepoInterface) error {
 	logger.Log.Info("InitFromFile", zap.String("filename", filename))
 	consumer, err := NewConsumer(filename)
@@ -71,10 +77,12 @@ func InitFromFile(filename string, storage *RepoInterface) error {
 	return nil
 }
 
+// Producer struct
 type Producer struct {
 	file *os.File
 }
 
+// NewProducer(filename string)
 func NewProducer(filename string) (*Producer, error) {
 	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -83,6 +91,7 @@ func NewProducer(filename string) (*Producer, error) {
 	return &Producer{file: file}, nil
 }
 
+// WriteElement(elem *Element)
 func (p *Producer) WriteElement(elem *Element) error {
 	data, err := json.Marshal(*elem)
 	logger.Log.Debug("WriteElement", zap.String("data", string(data)))
@@ -94,12 +103,14 @@ func (p *Producer) WriteElement(elem *Element) error {
 	return err
 }
 
+// FileRepository struct
 type FileRepository struct {
 	sr       *MemRepiository
 	Filename string
 	Producer *Producer
 }
 
+// GetFileRepository(filenme string)
 func GetFileRepository(filenme string) *FileRepository {
 	repo := &FileRepository{
 		sr:       GetMemRepository(),
@@ -110,6 +121,7 @@ func GetFileRepository(filenme string) *FileRepository {
 	return repo
 }
 
+// InitSaveFile()
 func (r *FileRepository) InitSaveFile() error {
 
 	err := error(nil)
@@ -120,6 +132,7 @@ func (r *FileRepository) InitSaveFile() error {
 	return nil
 }
 
+// Save(short, original string, userID string)
 func (r FileRepository) Save(short, original string, userID string) error {
 	_, ok, _ := r.sr.ReadWithUser(short, userID)
 	if !ok {
@@ -135,18 +148,22 @@ func (r FileRepository) Save(short, original string, userID string) error {
 	return r.sr.Save(short, original, userID)
 }
 
+// Read(short string, userID string)
 func (r FileRepository) Read(short string, userID string) (string, bool, bool) {
 	return (*r.sr).Read(short, userID)
 }
 
+// Ping()
 func (r FileRepository) Ping() error {
 	return r.sr.Ping()
 }
 
+// Len()
 func (r FileRepository) Len() int {
 	return r.sr.Len()
 }
 
+// Batch(data *[]KeyLongURLStr, userID string)
 func (r FileRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
 		err := r.Save(element.Key, element.LongURL, userID)
@@ -157,10 +174,12 @@ func (r FileRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	return nil
 }
 
+// GetUserUrls(userID string)
 func (r FileRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	return r.sr.GetUserUrls(userID)
 }
 
+// InitFromFile()
 func (r FileRepository) InitFromFile() error {
 	logger.Log.Debug("InitFromFile", zap.String("filename", r.Filename))
 	consumer, err := NewConsumer(r.Filename)
@@ -185,6 +204,7 @@ func (r FileRepository) InitFromFile() error {
 	return nil
 }
 
+// DelUserUrls(shortURLs *[]string, userID string)
 func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }

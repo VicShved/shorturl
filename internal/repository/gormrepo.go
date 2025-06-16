@@ -14,6 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// KeyOriginalURL struct
 type KeyOriginalURL struct {
 	Key       string `json:"short_url" gorm:"primaryKey;size:32"`
 	Original  string `json:"original_url"`
@@ -21,15 +22,18 @@ type KeyOriginalURL struct {
 	IsDeleted bool   `json:"is_deleted" gorm:"is_deleted"`
 }
 
+// GormRepository struct
 type GormRepository struct {
 	DB *gorm.DB
 }
 
+// GetGormDB(dns string)
 func GetGormDB(dns string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{})
 	return db, err
 }
 
+// GetGormRepo(dns string)
 func GetGormRepo(dns string) (*GormRepository, error) {
 	db, err := GetGormDB(dns)
 	if err != nil {
@@ -45,6 +49,7 @@ func GetGormRepo(dns string) (*GormRepository, error) {
 	return repo, err
 }
 
+// Migrate()
 func (r *GormRepository) Migrate() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -52,6 +57,7 @@ func (r *GormRepository) Migrate() error {
 	return err
 }
 
+// Save(short string, original string, userID string)
 func (r GormRepository) Save(short string, original string, userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -67,6 +73,7 @@ func (r GormRepository) Save(short string, original string, userID string) error
 	return nil
 }
 
+// Read(short string, userID string)
 func (r GormRepository) Read(short string, userID string) (string, bool, bool) {
 	logger.Log.Debug("Read", zap.String("UserID", userID))
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -88,6 +95,7 @@ func (r GormRepository) Read(short string, userID string) (string, bool, bool) {
 	return original, true, row.IsDeleted
 }
 
+// Len()
 func (r GormRepository) Len() int {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -101,11 +109,13 @@ func (r GormRepository) Len() int {
 	return int(count)
 }
 
+// Ping()
 func (r GormRepository) Ping() error {
 	sqlDB, _ := r.DB.DB()
 	return sqlDB.Ping()
 }
 
+// Batch(data *[]KeyLongURLStr, userID string)
 func (r GormRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	var rows []KeyOriginalURL
 	for _, element := range *data {
@@ -124,6 +134,7 @@ func (r GormRepository) Batch(data *[]KeyLongURLStr, userID string) error {
 	return nil
 }
 
+// GetUserUrls(userID string)
 func (r GormRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	var rows []KeyOriginalURL
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -135,6 +146,7 @@ func (r GormRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	return &rows, nil
 }
 
+// DelUserUrls(shortURLs *[]string, userID string)
 func (r GormRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 	// Создаю буферизированный канал
 	ch := make(chan string, 10)

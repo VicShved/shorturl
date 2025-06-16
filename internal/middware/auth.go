@@ -19,12 +19,12 @@ type CustClaims struct {
 
 type contextKey int
 
+// ContextUser
 const (
 	ContextUser contextKey = iota
 )
 
 // AuthorizationCookName
-// SigningMethod
 var AuthorizationCookName = "Authorization"
 var SigningMethod = jwt.SigningMethodHS512
 

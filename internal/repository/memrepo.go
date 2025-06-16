@@ -3,20 +3,24 @@ package repository
 var storage = make(map[string]string)
 var userStorage = make(map[string]*map[string]string)
 
+// GetStorage()
 func GetStorage() (*map[string]string, *map[string]*map[string]string) {
 	return &storage, &userStorage
 }
 
+// MemRepiository struct
 type MemRepiository struct {
 	mp      *map[string]string
 	userMap *map[string]*map[string]string
 }
 
+// GetMemRepository() *MemRepiository
 func GetMemRepository() *MemRepiository {
 	memstorage, userStorage := GetStorage()
 	return &MemRepiository{mp: memstorage, userMap: userStorage}
 }
 
+// Save(key string, value string, userID string)
 func (s MemRepiository) Save(key string, value string, userID string) error {
 	(*s.mp)[key] = value
 	urlMap, ok := (*s.userMap)[userID]
@@ -29,6 +33,7 @@ func (s MemRepiository) Save(key string, value string, userID string) error {
 	return nil
 }
 
+// Read(key string, userID string)
 func (s MemRepiository) Read(key string, userID string) (string, bool, bool) {
 	result, ok := (*s.mp)[key]
 	// urlMap, ok := (*s.userMap)[userID]
@@ -39,6 +44,7 @@ func (s MemRepiository) Read(key string, userID string) (string, bool, bool) {
 	return result, ok, false
 }
 
+// ReadWithUser(key string, userID string)
 func (s MemRepiository) ReadWithUser(key string, userID string) (string, bool, bool) {
 	urlMap, ok := (*s.userMap)[userID]
 	if !ok {
@@ -48,14 +54,17 @@ func (s MemRepiository) ReadWithUser(key string, userID string) (string, bool, b
 	return result, ok, false
 }
 
+// Len()
 func (s MemRepiository) Len() int {
 	return len(*s.mp)
 }
 
+// Ping()
 func (s MemRepiository) Ping() error {
 	return nil
 }
 
+// Batch(data *[]KeyLongURLStr, userID string)
 func (s MemRepiository) Batch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
 		err := s.Save(element.Key, element.LongURL, userID)
@@ -66,6 +75,7 @@ func (s MemRepiository) Batch(data *[]KeyLongURLStr, userID string) error {
 	return nil
 }
 
+// GetUserUrls(userID string)
 func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	var results []KeyOriginalURL
 	uMap, ok := (*s.userMap)[userID]
@@ -78,6 +88,7 @@ func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	return &results, nil
 }
 
+// DelUserUrls(shortURLs *[]string, userID string)
 func (s MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }
