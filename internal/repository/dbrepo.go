@@ -1,3 +1,4 @@
+// repository
 package repository
 
 import (
@@ -10,15 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
+// DBRow struct
 type DBRow struct {
 	Short    string `json:"short_url"`
 	Original string `json:"original_url"`
 }
 
+// DBRepository struct
 type DBRepository struct {
 	db *sql.DB
 }
 
+// GetDBRepo(dsn string)
 func GetDBRepo(dsn string) *DBRepository {
 	// postgres driver
 	pgdriver, err := sql.Open("pgx", dsn)
@@ -33,6 +37,7 @@ func GetDBRepo(dsn string) *DBRepository {
 	return dbrepo
 }
 
+// GetDBRepository(db *sql.DB)
 func GetDBRepository(db *sql.DB) (*DBRepository, error) {
 	repo := &DBRepository{
 		db: db,
@@ -41,6 +46,7 @@ func GetDBRepository(db *sql.DB) (*DBRepository, error) {
 	return repo, err
 }
 
+// CreateTable()
 func (r *DBRepository) CreateTable() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -49,6 +55,7 @@ func (r *DBRepository) CreateTable() error {
 
 }
 
+// Save(short, original string)
 func (r DBRepository) Save(short, original string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -63,6 +70,7 @@ func (r DBRepository) Save(short, original string) error {
 	return err
 }
 
+// Read(short string)
 func (r DBRepository) Read(short string) (string, bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -84,6 +92,7 @@ func (r DBRepository) Read(short string) (string, bool) {
 	return value.String, true
 }
 
+// Len()
 func (r DBRepository) Len() int {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -105,10 +114,12 @@ func (r DBRepository) Len() int {
 	return int(value.Int32)
 }
 
+// Ping()
 func (r DBRepository) Ping() error {
 	return r.db.Ping()
 }
 
+// Batch(data *[]KeyLongURLStr)
 func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
@@ -135,6 +146,7 @@ func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
 	return err
 }
 
+// DeleteUserUrls(shortURLs *[]string, userID string)
 func (r DBRepository) DeleteUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }

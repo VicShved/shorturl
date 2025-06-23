@@ -1,3 +1,4 @@
+// package app
 package app
 
 import (
@@ -5,6 +6,7 @@ import (
 	"os"
 )
 
+// type ServerConfigStruct
 type ServerConfigStruct struct {
 	ServerAddress   string
 	BaseURL         string
@@ -14,8 +16,10 @@ type ServerConfigStruct struct {
 	LogLevel        string
 }
 
+// var ServerConfig
 var ServerConfig ServerConfigStruct
 
+// func GetServerConfig
 func GetServerConfig() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.ServerAddress, "a", "localhost:8080", "start base url")
 	flag.StringVar(&ServerConfig.BaseURL, "b", "http://localhost:8080", "result base url")

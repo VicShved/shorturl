@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"bytes"
@@ -12,7 +12,6 @@ import (
 	"testing"
 
 	"github.com/VicShved/shorturl/internal/app"
-	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/VicShved/shorturl/internal/middware"
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
@@ -60,7 +59,7 @@ func TestPost(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
-	handlers := handler.GetHandler(serv)
+	handlers := GetHandler(serv)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -126,7 +125,7 @@ func TestGet(t *testing.T) {
 
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, "")
-	handlers := handler.GetHandler(serv)
+	handlers := GetHandler(serv)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -202,7 +201,7 @@ func TestPostJSON(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
-	handlers := handler.GetHandler(serv)
+	handlers := GetHandler(serv)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -230,5 +229,77 @@ func TestPostJSON(t *testing.T) {
 			assert.Equal(t, resulturl, resdata.Result)
 			assert.Equal(t, test.want.contentType, res.Header.Get("Content-Type"))
 		})
+	}
+}
+
+func BenchmarkGet(b *testing.B) {
+
+	type want struct {
+		status         int
+		locationheader string
+		contentType    string
+	}
+	tests := []struct {
+		name    string
+		method  string
+		suffics string
+		want    want
+	}{
+		{
+			name:    "test1",
+			method:  http.MethodGet,
+			suffics: "1",
+			want: want{
+				status:         307,
+				locationheader: "http://ya.ru/",
+			},
+		},
+		{
+			name:    "test2",
+			method:  http.MethodGet,
+			suffics: "2",
+			want: want{
+				status:         307,
+				locationheader: "https://google.com/",
+			},
+		},
+		{
+			name:    "null in key",
+			method:  http.MethodGet,
+			suffics: "",
+			want: want{
+				status:         400,
+				locationheader: "https://google.com/",
+			},
+		},
+	}
+
+	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
+	serv := service.GetService(repo, "")
+	handlers := GetHandler(serv)
+	user, _ := app.GetNewUUID()
+
+	for i := 0; i < b.N; i++ {
+		for _, test := range tests {
+			if test.suffics != "" {
+				serv.Save(test.suffics, test.want.locationheader, string(user))
+			}
+			target := "/{key}"
+
+			request := httptest.NewRequest(test.method, target, nil)
+			w := httptest.NewRecorder()
+
+			rctx := chi.NewRouteContext()
+			rctx.URLParams.Add("key", test.suffics)
+			ctx := request.Context()
+			ctx = context.WithValue(ctx, chi.RouteCtxKey, rctx)
+			ctx = context.WithValue(ctx, middware.ContextUser, user)
+			request = request.WithContext(ctx)
+
+			handlers.HandleGET(w, request)
+			res := w.Result()
+			res.Body.Close()
+
+		}
 	}
 }

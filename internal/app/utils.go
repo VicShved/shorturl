@@ -1,3 +1,4 @@
+// package app
 package app
 
 import (
@@ -7,7 +8,7 @@ import (
 	"github.com/hashicorp/go-uuid"
 )
 
-// hash
+// func hash
 func Hash(s string) string {
 	h := fnv.New32a()
 	_, err := h.Write([]byte(s))
@@ -17,6 +18,7 @@ func Hash(s string) string {
 	return strconv.Itoa(int(h.Sum32()))
 }
 
+// func GetNewUUID
 func GetNewUUID() (string, error) {
 	userID, err := uuid.GenerateUUID()
 	return string(userID), err

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/logger"
 	"go.uber.org/zap"
 )
@@ -18,21 +17,24 @@ type loggingResponseWriter struct {
 	responseData *responseData
 }
 
+// Write
 func (r *loggingResponseWriter) Write(b []byte) (int, error) {
 	size, err := r.ResponseWriter.Write(b)
 	r.responseData.size = size
 	return size, err
 }
 
+// WriteHeader
 func (r *loggingResponseWriter) WriteHeader(status int) {
 	r.ResponseWriter.WriteHeader(status)
 	r.responseData.status = status
 }
 
+// Logger(next http.Handler)
 func Logger(next http.Handler) http.Handler {
 	logFn := func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
-		userID := r.Context().Value(app.ContextUser).(string)
+		userID := r.Context().Value(ContextUser).(string)
 		responseData := &responseData{
 			status: 0,
 			size:   0,

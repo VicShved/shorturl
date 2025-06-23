@@ -15,6 +15,7 @@ type gzipWriter struct {
 	Writer io.Writer
 }
 
+// Write(data []byte)
 func (w gzipWriter) Write(data []byte) (int, error) {
 	return w.Writer.Write(data)
 }
@@ -33,16 +34,20 @@ func newGzipReader(r io.ReadCloser) (*gzipReader, error) {
 	return &gzipReader{r: r, gz: gz}, nil
 }
 
+// Read(data []byte)
 func (gz *gzipReader) Read(data []byte) (int, error) {
 	return gz.gz.Read(data)
 }
 
+// Close()
 func (gz *gzipReader) Close() error {
 	if err := gz.r.Close(); err != nil {
 		return err
 	}
 	return gz.gz.Close()
 }
+
+// GzipMiddleware(next http.Handler)
 func GzipMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cntEnc := strings.Contains(r.Header.Get("Content-Encoding"), "gzip")

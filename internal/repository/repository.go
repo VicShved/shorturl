@@ -4,11 +4,13 @@ import (
 	"errors"
 )
 
+// KeyLongURLStr struct
 type KeyLongURLStr struct {
 	Key     string
 	LongURL string
 }
 
+// RepoInterface interface
 type RepoInterface interface {
 	Save(key string, value string, userID string) error
 	Read(key string, userID string) (string, bool, bool)
@@ -19,4 +21,5 @@ type RepoInterface interface {
 	DelUserUrls(shortURLs *[]string, userID string) error
 }
 
+// ErrPKConflict
 var ErrPKConflict = errors.New("PK conflict")
