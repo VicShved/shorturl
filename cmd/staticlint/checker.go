@@ -135,7 +135,7 @@ func main() {
 			analizersList = append(analizersList, v.Analyzer)
 		}
 	}
-
+	analizersList = append(analizersList, OSExitCheckAnalyzer)
 	multichecker.Main(
 		analizersList...,
 	)
