@@ -87,7 +87,7 @@ func TestGet(t *testing.T) {
 	type want struct {
 		status         int
 		locationheader string
-		contentType    string
+		// contentType    string
 	}
 	tests := []struct {
 		name    string
