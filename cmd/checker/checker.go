@@ -63,7 +63,7 @@ import (
 	"honnef.co/go/tools/stylecheck/st1000"
 )
 
-func AddPassesAnalizers(analizersList []*analysis.Analyzer) []*analysis.Analyzer {
+func addPassesAnalizers(analizersList []*analysis.Analyzer) []*analysis.Analyzer {
 	analizersList = append(analizersList, appends.Analyzer)
 	analizersList = append(analizersList, asmdecl.Analyzer)
 	analizersList = append(analizersList, assign.Analyzer)
@@ -118,7 +118,7 @@ func AddPassesAnalizers(analizersList []*analysis.Analyzer) []*analysis.Analyzer
 	return analizersList
 }
 
-func AddOtherSCAnalizers(analizersList []*analysis.Analyzer) []*analysis.Analyzer {
+func addOtherSCAnalizers(analizersList []*analysis.Analyzer) []*analysis.Analyzer {
 	analizersList = append(analizersList, s1000.Analyzer)
 	analizersList = append(analizersList, st1000.Analyzer)
 	analizersList = append(analizersList, qf1001.Analyzer)
@@ -128,7 +128,7 @@ func AddOtherSCAnalizers(analizersList []*analysis.Analyzer) []*analysis.Analyze
 func main() {
 	fmt.Println("start checker")
 	var analizersList []*analysis.Analyzer
-	analizersList = AddPassesAnalizers(analizersList)
+	analizersList = addPassesAnalizers(analizersList)
 	for _, v := range staticcheck.Analyzers {
 		if strings.Contains(v.Analyzer.Name, "SA") {
 			analizersList = append(analizersList, v.Analyzer)
