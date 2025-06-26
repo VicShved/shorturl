@@ -33,7 +33,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			}
 		case *ast.SelectorExpr:
 			{
-				if (x.X.(*ast.Ident).Name == "os") && (x.Sel.Name == "Exit") && (funcName == "main") {
+				if (x.X.(*ast.Ident).Name == "os") && (x.Sel.Name == "Exit") && (funcName == "main") && (packageName == "main") {
 					pass.Reportf(x.Pos(), "os.Exit call error")
 				}
 

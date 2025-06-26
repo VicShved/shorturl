@@ -1,10 +1,10 @@
-package pkg
+package main
 
 import "os"
 
 func main() {
 	os.DirFS("sss")
-	os.Exit(1)
+	os.Exit(1) // want "os.Exit call error"
 }
 
 func f() {
