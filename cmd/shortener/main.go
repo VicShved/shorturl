@@ -12,10 +12,18 @@ var buildVersion string
 var buildDate string
 var buildCommit string
 
+func valStrFunc(s string) string {
+	if s == "" {
+		s = "N/A"
+	}
+	return s
+}
+
 func main() {
-	fmt.Print("Build version: ", buildVersion)
-	fmt.Print("Build date: ", buildDate)
-	fmt.Print("Build commit: ", buildCommit)
+
+	fmt.Println("Build version: ", valStrFunc(buildVersion))
+	fmt.Println("Build date: ", valStrFunc(buildDate))
+	fmt.Println("Build commit: ", valStrFunc(buildCommit))
 	// Get app config
 	var config = app.GetServerConfig()
 	// Init custom logger
