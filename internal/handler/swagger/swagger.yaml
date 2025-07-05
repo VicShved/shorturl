@@ -1,0 +1,252 @@
+definitions:
+  handler.reqJSON:
+    properties:
+      url:
+        type: string
+    type: object
+  handler.respJSON:
+    properties:
+      result:
+        type: string
+    type: object
+  service.BatchReqJSON:
+    properties:
+      correlation_id:
+        type: string
+      original_url:
+        type: string
+    type: object
+  service.BatchRespJSON:
+    properties:
+      correlation_id:
+        type: string
+      short_url:
+        type: string
+    type: object
+  service.UserURLRespJSON:
+    properties:
+      original_url:
+        type: string
+      short_url:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /:
+    get:
+      consumes:
+      - plain/text
+      description: Запрос на получение длинного url из короткого в header Location
+      operationId: HandleGet
+      parameters:
+      - description: Короткий url
+        in: path
+        name: key
+        required: true
+        type: string
+      produces:
+      - plain/text
+      responses:
+        "307":
+          description: Temporary Redirect
+        "400":
+          description: Неверный запрос
+          schema:
+            type: string
+        "403":
+          description: Ошибка авторизации
+          schema:
+            type: string
+        "410":
+          description: Удален
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            type: string
+      security:
+      - AuthorizationCook: []
+      summary: Получение url
+      tags:
+      - ""
+    post:
+      consumes:
+      - plain/text
+      description: Запрос на сохранение длинного url
+      operationId: HandlePost
+      parameters:
+      - description: Исходный url
+        in: body
+        name: url
+        required: true
+        schema:
+          type: string
+      produces:
+      - plain/text
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Неверный запрос
+          schema:
+            type: string
+        "403":
+          description: Ошибка авторизации
+          schema:
+            type: string
+        "409":
+          description: Уже есть такой url
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            type: string
+      security:
+      - AuthorizationCook: []
+      summary: Сохранение url
+      tags:
+      - ""
+  /api/shorten:
+    post:
+      consumes:
+      - application/json
+      description: Запрос на сохранение длинного url
+      operationId: HandlePostJSON
+      parameters:
+      - description: Исходный url
+        in: body
+        name: url
+        required: true
+        schema:
+          $ref: '#/definitions/handler.reqJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.respJSON'
+        "400":
+          description: Неверный запрос
+          schema:
+            type: string
+        "403":
+          description: Ошибка авторизации
+          schema:
+            type: string
+        "409":
+          description: Уже есть такой url
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            type: string
+      security:
+      - AuthorizationCook: []
+      summary: Сохранение url
+      tags:
+      - api
+  /api/shorten/batch:
+    post:
+      consumes:
+      - application/json
+      description: Запрос на сохранение группы длинных url
+      operationId: HandleBatchPOST
+      parameters:
+      - description: Исходные urls
+        in: body
+        name: urls
+        required: true
+        schema:
+          $ref: '#/definitions/service.BatchReqJSON'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/service.BatchRespJSON'
+        "400":
+          description: Bad Request
+        "403":
+          description: Forbidden
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
+      security:
+      - AuthorizationCook: []
+      summary: Сохранение группы url
+      tags:
+      - api
+  /api/user/urls:
+    delete:
+      consumes:
+      - application/json
+      description: Запрос на удаление urls пользователя
+      operationId: DelUserURLs
+      parameters:
+      - description: urls на удаление
+        in: body
+        name: urls
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - AuthorizationCook: []
+      summary: Удаление url пользователя
+      tags:
+      - api
+    get:
+      consumes:
+      - application/json
+      description: Запрос на все urls пользователя
+      operationId: GetUserURLs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.UserURLRespJSON'
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+      security:
+      - AuthorizationCook: []
+      summary: Все urls пользователя
+      tags:
+      - api
+  /ping:
+    get:
+      description: Запрос на проверку работы БД
+      operationId: PingDB
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+      security:
+      - AuthorizationCook: []
+      summary: Проверка БД
+      tags:
+      - ""
+swagger: "2.0"
