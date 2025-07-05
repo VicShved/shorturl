@@ -58,7 +58,21 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	return router
 }
 
-// HandlePostJSON - POST Endpoint for short URL in  application/json content-type
+// HandlePostJSON godoc
+// @Tags api
+// @Summary Сохранение url
+// @Description Запрос на сохранение длинного url
+// @ID HandlePostJSON
+// @Accept  json
+// @Produce json
+// @Param url body reqJSON true "Исходный url"
+// @Success 200 {object} respJSON
+// @Failure 400 {string} string "Неверный запрос"
+// @Failure 403 {string} string "Ошибка авторизации"
+// @Failure 409 {string} string "Уже есть такой url"
+// @Failure 500 {string} string "Внутренняя ошибка"
+// @Security AuthorizationCook
+// @Router /api/shorten [post]
 func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	var indata reqJSON
 	// Вытаскиваю userID из контекста
@@ -99,7 +113,21 @@ func (h Handler) HandlePostJSON(w http.ResponseWriter, r *http.Request) {
 	logger.Log.Debug("", zap.String("url", indata.URL), zap.String("response", string(resp)))
 }
 
-// HandlePost - POST Endpoint for short URL in text/plain content-type
+// HandlePost godoc
+// @Tags
+// @Summary Сохранение url
+// @Description Запрос на сохранение длинного url
+// @ID HandlePost
+// @Accept  plain/text
+// @Produce plain/text
+// @Param url body string true "Исходный url"
+// @Success 200 {string} string
+// @Failure 400 {string} string "Неверный запрос"
+// @Failure 403 {string} string "Ошибка авторизации"
+// @Failure 409 {string} string "Уже есть такой url"
+// @Failure 500 {string} string "Внутренняя ошибка"
+// @Security AuthorizationCook
+// @Router / [post]
 func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -121,7 +149,21 @@ func (h Handler) HandlePOST(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(*newurl))
 }
 
-// HandleGET - GET Endpoint for get long URL from short URL(id)
+// HandleGET godoc
+// @Tags
+// @Summary Получение url
+// @Description Запрос на получение длинного url из короткого в header Location
+// @ID HandleGet
+// @Accept  plain/text
+// @Produce plain/text
+// @Param key path string true "Короткий url"
+// @Success 307
+// @Failure 400 {string} string "Неверный запрос"
+// @Failure 403 {string} string "Ошибка авторизации"
+// @Failure 410 {string} string "Удален"
+// @Failure 500 {string} string "Внутренняя ошибка"
+// @Security AuthorizationCook
+// @Router / [get]
 func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -147,7 +189,15 @@ func (h Handler) HandleGET(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusTemporaryRedirect)
 }
 
-// PingDB - GET Endpoint for ping database
+// PingDB godoc
+// @Tags
+// @Summary Проверка БД
+// @Description Запрос на проверку работы БД
+// @ID PingDB
+// @Success 200
+// @Failure 500
+// @Security AuthorizationCook
+// @Router /ping [get]
 func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -161,7 +211,21 @@ func (h Handler) PingDB(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// HandleBatchPOST - POST Endpoint for batch short URL in  application/json content-type
+// HandleBatchPOST godoc
+// @Tags api
+// @Summary Сохранение группы url
+// @Description Запрос на сохранение группы длинных url
+// @ID HandleBatchPOST
+// @Accept  json
+// @Produce json
+// @Param urls body service.BatchReqJSON true "Исходные urls"
+// @Success 201 {object} service.BatchRespJSON
+// @Failure 400
+// @Failure 403
+// @Failure 409
+// @Failure 500
+// @Security AuthorizationCook
+// @Router /api/shorten/batch [post]
 func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -198,7 +262,18 @@ func (h Handler) HandleBatchPOST(w http.ResponseWriter, r *http.Request) {
 	logger.Log.Debug("Batch handled", zap.String("response", string(resp)))
 }
 
-// GetUserURLs - GET Endpoint for find all user short|longs URLs
+// GetUserURLs godoc
+// @Tags api
+// @Summary Все urls пользователя
+// @Description Запрос на все urls пользователя
+// @ID GetUserURLs
+// @Accept  json
+// @Produce json
+// @Success 200 {object} service.UserURLRespJSON
+// @Success 204
+// @Failure 500
+// @Security AuthorizationCook
+// @Router /api/user/urls [get]
 func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
@@ -234,7 +309,19 @@ func (h Handler) GetUserURLs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Length", strconv.Itoa(lenth))
 }
 
-// DelUserURLs - DELETE Endpoint for delete user short|longs URLs
+// DelUserURLs godoc
+// @Tags api
+// @Summary Удаление url пользователя
+// @Description Запрос на удаление urls пользователя
+// @ID DelUserURLs
+// @Accept  json
+// @Produce json
+// @Param urls body []string true "urls на удаление"
+// @Success 202
+// @Failure 400
+// @Failure 500
+// @Security AuthorizationCook
+// @Router /api/user/urls [delete]
 func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
 	// Вытаскиваю userID из контекста
 	userID := r.Context().Value(middware.ContextUser).(string)
