@@ -163,7 +163,7 @@ func TestGetUserURLs(t *testing.T) {
 				}
 			} else {
 				if len(urls) > 0 {
-					t.Errorf("result GetUserURLs expected %s got %s", urls, nil)
+					t.Errorf("result GetUserURLs expected %s got nil", urls)
 				}
 			}
 
