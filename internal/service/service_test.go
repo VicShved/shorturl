@@ -157,9 +157,16 @@ func TestGetUserURLs(t *testing.T) {
 				t.Errorf("userURLs == nil")
 			}
 
-			if (!reflect.DeepEqual(*userURLs, urls)) && ((len(urls) != 0) || (len(*userURLs) != 0)) {
-				t.Errorf("result GetUserURLs expected %s got %s", urls, *userURLs)
+			if userURLs != nil {
+				if !reflect.DeepEqual(*userURLs, urls) {
+					t.Errorf("result GetUserURLs expected %s got %s", urls, *userURLs)
+				}
+			} else {
+				if len(urls) > 0 {
+					t.Errorf("result GetUserURLs expected %s got %s", urls, nil)
+				}
 			}
+
 		})
 	}
 }
