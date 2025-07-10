@@ -13,6 +13,7 @@ import (
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Server struct
@@ -21,11 +22,14 @@ type Server struct {
 }
 
 // Run(serverAddress string, router *chi.Mux)
-func (s *Server) Run(serverAddress string, router *chi.Mux) error {
+func (s *Server) Run(serverAddress string, router *chi.Mux, enableHTTPS bool) error {
 
 	s.hTTPServer = &http.Server{
 		Addr:    serverAddress,
 		Handler: router,
+	}
+	if enableHTTPS == true {
+		return http.Serve(autocert.NewListener(serverAddress), router)
 	}
 	return s.hTTPServer.ListenAndServe()
 }
@@ -67,7 +71,7 @@ func ServerRun(config app.ServerConfigStruct) {
 
 	// Run server
 	server := new(Server)
-	err := server.Run(config.ServerAddress, router)
+	err := server.Run(config.ServerAddress, router, config.EnableHTTPS)
 	if err != nil {
 		log.Fatal(err)
 	}
