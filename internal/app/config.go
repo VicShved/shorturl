@@ -27,7 +27,7 @@ func GetServerConfig() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.FileStoragePath, "f", "", "file storage path")
 	flag.BoolVar(&ServerConfig.EnableHTTPS, "s", false, "enable https")
 	flag.StringVar(&ServerConfig.DBDSN, "d", "", "DataBase DSN")
-	flag.StringVar(&ServerConfig.SecretKey, "s", "VeryImpotantSecretKey.YesYes", "Secret key")
+	flag.StringVar(&ServerConfig.SecretKey, "k", "VeryImpotantSecretKey.YesYes", "Secret key")
 	flag.StringVar(&ServerConfig.LogLevel, "l", "INFO", "Log level")
 	flag.Parse()
 
