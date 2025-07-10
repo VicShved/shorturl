@@ -28,7 +28,7 @@ func (s *Server) Run(serverAddress string, router *chi.Mux, enableHTTPS bool) er
 		Addr:    serverAddress,
 		Handler: router,
 	}
-	if enableHTTPS == true {
+	if enableHTTPS {
 		return http.Serve(autocert.NewListener(serverAddress), router)
 	}
 	return s.hTTPServer.ListenAndServe()
