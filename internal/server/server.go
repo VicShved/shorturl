@@ -3,11 +3,11 @@ package server
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
@@ -80,22 +80,27 @@ func ServerRun(config app.ServerConfigStruct) {
 	server := new(Server)
 	server.Init(config.ServerAddress, router)
 
-	idleChan := make(chan struct{})
+	idleChan := make(chan string)
 	exitChan := make(chan os.Signal, 10)
 	signal.Notify(exitChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
 	go func() {
 		<-exitChan
-		if err := server.hTTPServer.Shutdown(context.Background()); err != nil {
+		logger.Log.Info("Catch syscall sygnal")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		if err := server.hTTPServer.Shutdown(ctx); err != nil {
 			logger.Log.Error("Server shuntdown: %v", zap.Error(err))
 		}
+		logger.Log.Info("Send message for http server shutdown")
 		close(idleChan)
 	}()
 
 	// Run server
 	err := server.Run(config.EnableHTTPS)
 	if err != nil {
-		log.Fatal(err)
+		logger.Log.Error("Error", zap.Error(err))
 	}
 	<-idleChan
 	// repo.Close()
