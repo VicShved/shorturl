@@ -89,11 +89,11 @@ func ServerRun(config app.ServerConfigStruct) {
 		logger.Log.Info("Catch syscall sygnal")
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
-
+		// Shutdown
 		if err := server.hTTPServer.Shutdown(ctx); err != nil {
 			logger.Log.Error("Server shuntdown: %v", zap.Error(err))
 		}
-		logger.Log.Info("Send message for http server shutdown")
+		logger.Log.Info("Send message for shutdown gracefully")
 		close(idleChan)
 	}()
 
@@ -102,6 +102,8 @@ func ServerRun(config app.ServerConfigStruct) {
 	if err != nil {
 		logger.Log.Error("Error", zap.Error(err))
 	}
+
+	// Shutdown gracefully
 	<-idleChan
 	repo.Close()
 	logger.Log.Info("Server Shutdown gracefully")
