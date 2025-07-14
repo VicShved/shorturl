@@ -103,6 +103,6 @@ func ServerRun(config app.ServerConfigStruct) {
 		logger.Log.Error("Error", zap.Error(err))
 	}
 	<-idleChan
-	// repo.Close()
+	repo.Close()
 	logger.Log.Info("Server Shutdown gracefully")
 }
