@@ -25,15 +25,19 @@ type Server struct {
 	hTTPServer *http.Server
 }
 
-// Run(serverAddress string, router *chi.Mux)
-func (s *Server) Run(serverAddress string, router *chi.Mux, enableHTTPS bool) error {
+// Init Server(serverAddress string, router *chi.Mux)
+func (s *Server) Init(serverAddress string, router *chi.Mux) {
 
 	s.hTTPServer = &http.Server{
 		Addr:    serverAddress,
 		Handler: router,
 	}
+}
+
+// Run(serverAddress string, router *chi.Mux)
+func (s *Server) Run(enableHTTPS bool) error {
 	if enableHTTPS {
-		return http.Serve(autocert.NewListener(serverAddress), router)
+		return s.hTTPServer.Serve(autocert.NewListener(s.hTTPServer.Addr))
 	}
 	return s.hTTPServer.ListenAndServe()
 }
@@ -74,6 +78,7 @@ func ServerRun(config app.ServerConfigStruct) {
 	router := handler.InitRouter(middlewares)
 	// Create server
 	server := new(Server)
+	server.Init(config.ServerAddress, router)
 
 	idleChan := make(chan struct{})
 	exitChan := make(chan os.Signal, 10)
@@ -88,7 +93,7 @@ func ServerRun(config app.ServerConfigStruct) {
 	}()
 
 	// Run server
-	err := server.Run(config.ServerAddress, router, config.EnableHTTPS)
+	err := server.Run(config.EnableHTTPS)
 	if err != nil {
 		log.Fatal(err)
 	}
