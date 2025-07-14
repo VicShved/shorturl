@@ -2,8 +2,12 @@
 package server
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/VicShved/shorturl/internal/app"
 	"github.com/VicShved/shorturl/internal/handler"
@@ -34,7 +38,7 @@ func (s *Server) Run(serverAddress string, router *chi.Mux, enableHTTPS bool) er
 	return s.hTTPServer.ListenAndServe()
 }
 
-// ServerRun(config app.ServerConfigStruct)
+// ServerRun (config app.ServerConfigStruct)
 func ServerRun(config app.ServerConfigStruct) {
 	// repo choice
 	var repo repository.RepoInterface
@@ -68,11 +72,27 @@ func ServerRun(config app.ServerConfigStruct) {
 
 	//	Create Router
 	router := handler.InitRouter(middlewares)
+	// Create server
+	server := new(Server)
+
+	idleChan := make(chan struct{})
+	exitChan := make(chan os.Signal, 10)
+	signal.Notify(exitChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+	go func() {
+		<-exitChan
+		if err := server.hTTPServer.Shutdown(context.Background()); err != nil {
+			logger.Log.Error("Server shuntdown: %v", zap.Error(err))
+		}
+		close(idleChan)
+	}()
 
 	// Run server
-	server := new(Server)
 	err := server.Run(config.ServerAddress, router, config.EnableHTTPS)
 	if err != nil {
 		log.Fatal(err)
 	}
+	<-idleChan
+	repo.Close()
+	logger.Log.Info("Server Shutdown gracefully")
 }

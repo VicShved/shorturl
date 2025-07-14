@@ -19,6 +19,7 @@ type RepoInterface interface {
 	Batch(data *[]KeyLongURLStr, userID string) error
 	GetUserUrls(userID string) (*[]KeyOriginalURL, error)
 	DelUserUrls(shortURLs *[]string, userID string) error
+	Close()
 }
 
 // ErrPKConflict

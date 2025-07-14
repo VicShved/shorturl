@@ -92,3 +92,8 @@ func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 func (s MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }
+
+// Close memrep
+func (s MemRepiository) Close() {
+
+}

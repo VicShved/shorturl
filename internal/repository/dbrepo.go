@@ -150,3 +150,8 @@ func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
 func (r DBRepository) DeleteUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }
+
+// Close db connection
+func (r DBRepository) Close() {
+	r.db.Close()
+}

@@ -208,3 +208,8 @@ func (r FileRepository) InitFromFile() error {
 func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }
+
+// Close file rep
+func (r FileRepository) Close() {
+
+}
