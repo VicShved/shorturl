@@ -210,7 +210,7 @@ func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close file rep
-func (r FileRepository) Close() {
+func (r FileRepository) CloseConnect() {
 
 }
 

@@ -152,7 +152,7 @@ func (r DBRepository) DeleteUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close db connection
-func (r DBRepository) Close() {
+func (r DBRepository) CloseConnect() {
 	r.db.Close()
 }
 

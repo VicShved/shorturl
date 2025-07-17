@@ -19,7 +19,7 @@ type RepoInterface interface {
 	SaveBatch(data *[]KeyLongURLStr, userID string) error
 	GetUserUrls(userID string) (*[]KeyOriginalURL, error)
 	DelUserUrls(shortURLs *[]string, userID string) error
-	Close()
+	CloseConnect()
 	UrlsCount() (int, error)
 	UsersCount() (int, error)
 }

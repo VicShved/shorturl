@@ -187,7 +187,7 @@ func (r GormRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close connection
-func (r GormRepository) Close() {
+func (r GormRepository) CloseConnect() {
 	sqlDB, _ := r.DB.DB()
 	sqlDB.Close()
 }
