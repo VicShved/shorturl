@@ -95,7 +95,7 @@ func (s MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
 
 // Close memrep
 func (s MemRepiository) CloseConnect() {
-
+	return
 }
 
 // UsersCount()
