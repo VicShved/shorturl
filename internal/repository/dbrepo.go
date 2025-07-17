@@ -120,7 +120,7 @@ func (r DBRepository) Ping() error {
 }
 
 // Batch(data *[]KeyLongURLStr)
-func (r DBRepository) Batch(data *[]KeyLongURLStr, userID string) error {
+func (r DBRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 

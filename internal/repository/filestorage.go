@@ -163,8 +163,8 @@ func (r FileRepository) Len() int {
 	return r.sr.Len()
 }
 
-// Batch(data *[]KeyLongURLStr, userID string)
-func (r FileRepository) Batch(data *[]KeyLongURLStr, userID string) error {
+// SaveBatch(data *[]KeyLongURLStr, userID string)
+func (r FileRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
 		err := r.Save(element.Key, element.LongURL, userID)
 		if err != nil {

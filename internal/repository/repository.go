@@ -16,7 +16,7 @@ type RepoInterface interface {
 	Read(key string, userID string) (string, bool, bool)
 	Ping() error
 	Len() int
-	Batch(data *[]KeyLongURLStr, userID string) error
+	SaveBatch(data *[]KeyLongURLStr, userID string) error
 	GetUserUrls(userID string) (*[]KeyOriginalURL, error)
 	DelUserUrls(shortURLs *[]string, userID string) error
 	Close()

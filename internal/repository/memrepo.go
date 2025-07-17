@@ -64,8 +64,8 @@ func (s MemRepiository) Ping() error {
 	return nil
 }
 
-// Batch(data *[]KeyLongURLStr, userID string)
-func (s MemRepiository) Batch(data *[]KeyLongURLStr, userID string) error {
+// SaveBatch(data *[]KeyLongURLStr, userID string)
+func (s MemRepiository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
 		err := s.Save(element.Key, element.LongURL, userID)
 		if err != nil {

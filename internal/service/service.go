@@ -74,7 +74,7 @@ func (s *ShortenService) Batch(data *[]BatchReqJSON, userID string) ([]BatchResp
 	}
 
 	// batch on repo layer
-	err := s.repo.Batch(&repodata, userID)
+	err := s.repo.SaveBatch(&repodata, userID)
 	if err != nil {
 		return nil, err
 	}

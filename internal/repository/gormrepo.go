@@ -115,8 +115,8 @@ func (r GormRepository) Ping() error {
 	return sqlDB.Ping()
 }
 
-// Batch(data *[]KeyLongURLStr, userID string)
-func (r GormRepository) Batch(data *[]KeyLongURLStr, userID string) error {
+// SaveBatch(data *[]KeyLongURLStr, userID string)
+func (r GormRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	var rows []KeyOriginalURL
 	for _, element := range *data {
 		rows = append(rows, KeyOriginalURL{Key: element.Key, Original: element.LongURL, UserID: userID})
