@@ -55,6 +55,7 @@ func (h Handler) InitRouter(mdwr []func(http.Handler) http.Handler) *chi.Mux {
 	router.Get("/ping", h.PingDB)
 	router.Get("/api/user/urls", h.GetUserURLs)
 	router.Delete("/api/user/urls", h.DelUserURLs)
+	router.Get("/api/internal/stats", h.GetStats)
 	return router
 }
 
@@ -345,4 +346,50 @@ func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusAccepted)
+}
+
+// GetStats godoc
+// @Tags api/internal
+// @Summary Статистика
+// @Description Запрос возвратит количество сокращенных URL и пользователей сервиса
+// @ID GetStats
+// @Accept  -
+// @Produce json
+// @Param -
+// @Success 200
+// @Failure 403
+// @Failure 500
+// @Security TRUSTED_SUBNET
+// @Router /api/internal/stats [get]
+func (h Handler) GetStats(w http.ResponseWriter, r *http.Request) {
+	// isInSubNet, err := isInSubNet(r)
+	// if !isInSubNet {
+	// 	w.WriteHeader(http.StatusForbidden)
+	// 	return
+	// }
+
+	w.Header().Set("Content-Type", "application/json")
+	outdata, err := h.serv.GetStats()
+	if err != nil {
+		logger.Log.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	resp, err := json.Marshal(outdata)
+	if err != nil {
+		logger.Log.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	lenth, err := w.Write(resp)
+	if err != nil {
+		logger.Log.Error(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Length", strconv.Itoa(lenth))
+
 }

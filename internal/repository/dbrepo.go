@@ -155,3 +155,13 @@ func (r DBRepository) DeleteUserUrls(shortURLs *[]string, userID string) error {
 func (r DBRepository) Close() {
 	r.db.Close()
 }
+
+// UsersCount()
+func (r DBRepository) UsersCount() (int, error) {
+	return 0, nil
+}
+
+// UrlsCount
+func (r DBRepository) UrlsCount() (int, error) {
+	return 0, nil
+}

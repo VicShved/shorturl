@@ -213,3 +213,13 @@ func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 func (r FileRepository) Close() {
 
 }
+
+// UsersCount()
+func (r FileRepository) UsersCount() (int, error) {
+	return 0, nil
+}
+
+// UrlsCount
+func (r FileRepository) UrlsCount() (int, error) {
+	return 0, nil
+}

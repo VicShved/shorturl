@@ -49,3 +49,6 @@ GET http://localhost:8080/api/user/urls
 DELETE http://localhost:8080/api/user/urls
 
 ["1806126526"]
+
+###
+GET http://localhost:8080/api/internal/stats

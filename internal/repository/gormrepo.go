@@ -191,3 +191,27 @@ func (r GormRepository) Close() {
 	sqlDB, _ := r.DB.DB()
 	sqlDB.Close()
 }
+
+// UsersCount()
+func (r GormRepository) UsersCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	var count int64
+	result := r.DB.WithContext(ctx).Model(&KeyOriginalURL{}).Distinct("UserID").Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(count), nil
+}
+
+// UrlsCount
+func (r GormRepository) UrlsCount() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	var count int64
+	result := r.DB.WithContext(ctx).Model(&KeyOriginalURL{}).Distinct("Key").Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(count), nil
+}

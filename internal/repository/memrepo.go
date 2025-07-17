@@ -97,3 +97,13 @@ func (s MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
 func (s MemRepiository) Close() {
 
 }
+
+// UsersCount()
+func (r MemRepiository) UsersCount() (int, error) {
+	return 0, nil
+}
+
+// UrlsCount
+func (r MemRepiository) UrlsCount() (int, error) {
+	return 0, nil
+}

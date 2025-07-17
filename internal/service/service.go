@@ -31,6 +31,12 @@ type ShortenService struct {
 	baseurl string
 }
 
+// Stats статистика
+type Stats struct {
+	UrlsCount  int `json:"urls"`
+	UsersCount int `json:"users"`
+}
+
 // Save(key string, value string, userID string)
 func (s *ShortenService) Save(key string, value string, userID string) error {
 	return s.repo.Save(key, value, userID)
@@ -111,4 +117,21 @@ func (s *ShortenService) GetShortURLFromLong(longURL *string) (*string, *string)
 // GetService(repo repository.RepoInterface, baseurl string)
 func GetService(repo repository.RepoInterface, baseurl string) *ShortenService {
 	return &ShortenService{repo: repo, baseurl: baseurl}
+}
+
+// GetStats
+func (s *ShortenService) GetStats() (Stats, error) {
+	result := Stats{}
+	usersCount, err := s.repo.UsersCount()
+	if err != nil {
+		return result, err
+	}
+	result.UsersCount = usersCount
+
+	urlsCount, err := s.repo.UrlsCount()
+	if err != nil {
+		return result, err
+	}
+	result.UrlsCount = urlsCount
+	return result, nil
 }
