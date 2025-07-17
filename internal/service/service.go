@@ -57,12 +57,12 @@ func (s *ShortenService) Len() int {
 	return s.repo.Len()
 }
 
-// Batch(indata *[]BatchReqJSON, userID string)
-func (s *ShortenService) Batch(indata *[]BatchReqJSON, userID string) ([]BatchRespJSON, error) {
+// Batch(data *[]BatchReqJSON, userID string)
+func (s *ShortenService) Batch(data *[]BatchReqJSON, userID string) ([]BatchRespJSON, error) {
 	var results []BatchRespJSON
 	var repodata []repository.KeyLongURLStr
 	// Prepare results & data for repo
-	for _, element := range *indata {
+	for _, element := range *data {
 		shorturl, key := s.GetShortURLFromLong(&element.OriginalURL)
 		res := BatchRespJSON{
 			CorrelationID: element.CorrelationID,
