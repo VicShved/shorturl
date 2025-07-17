@@ -29,14 +29,15 @@ type respJSON struct {
 
 // type Handler
 type Handler struct {
-	serv    *service.ShortenService
-	baseurl string
+	serv *service.ShortenService
+	cidr string
 }
 
 // func GetHandler
-func GetHandler(serv *service.ShortenService) *Handler {
+func GetHandler(serv *service.ShortenService, cidr string) *Handler {
 	return &Handler{
 		serv: serv,
+		cidr: cidr,
 	}
 }
 
@@ -362,11 +363,13 @@ func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
 // @Security TRUSTED_SUBNET
 // @Router /api/internal/stats [get]
 func (h Handler) GetStats(w http.ResponseWriter, r *http.Request) {
-	// isInSubNet, err := isInSubNet(r)
-	// if !isInSubNet {
-	// 	w.WriteHeader(http.StatusForbidden)
-	// 	return
-	// }
+	address := r.Header.Get("X-Real-IP")
+	logger.Log.Debug("GetStats", zap.String("Address", address))
+	isInSubNet := isInSubNet(address, h.cidr)
+	if !isInSubNet {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	outdata, err := h.serv.GetStats()

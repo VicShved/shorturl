@@ -14,7 +14,7 @@ import (
 func Example() {
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, "")
-	handler := handler.GetHandler(serv)
+	handler := handler.GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
 		middware.AuthMiddleware,

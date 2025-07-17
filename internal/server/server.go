@@ -65,7 +65,7 @@ func ServerRun(config app.ServerConfigStruct) {
 	// Bussiness layer (empty)
 	serv := service.GetService(repo, config.BaseURL)
 	// Handlers
-	handler := handler.GetHandler(serv)
+	handler := handler.GetHandler(serv, config.TrustedSubnet)
 
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
