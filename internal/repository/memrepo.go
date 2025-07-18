@@ -99,11 +99,11 @@ func (s MemRepository) CloseConn() {
 }
 
 // UsersCount()
-func (r MemRepository) UsersCount() (int, error) {
+func (s MemRepository) UsersCount() (int, error) {
 	return 0, nil
 }
 
 // UrlsCount
-func (r MemRepository) UrlsCount() (int, error) {
+func (s MemRepository) UrlsCount() (int, error) {
 	return 0, nil
 }

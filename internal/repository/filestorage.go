@@ -212,6 +212,7 @@ func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 // Close file rep
 func (r FileRepository) CloseConn() {
 	r.Producer.file.Close()
+	r.sr.CloseConn()
 }
 
 // UsersCount()
