@@ -303,3 +303,36 @@ func BenchmarkGet(b *testing.B) {
 		}
 	}
 }
+
+func TestisInSubNet(t *testing.T) {
+
+	var tests = []struct {
+		address string
+		cidr    string
+		want    bool
+	}{
+		{
+			address: "192.168.0.1",
+			cidr:    "192.168.0.1/28",
+			want:    true,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "192.168.0.1/28",
+			want:    false,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "",
+			want:    false,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "192.168.0.128",
+			want:    false,
+		},
+	}
+	for _, test := range tests {
+		assert.Equal(t, isInSubNet(test.address, test.cidr), test.want)
+	}
+}
