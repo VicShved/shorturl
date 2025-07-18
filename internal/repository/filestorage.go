@@ -105,7 +105,7 @@ func (p *Producer) WriteElement(elem *Element) error {
 
 // FileRepository struct
 type FileRepository struct {
-	sr       *MemRepiository
+	sr       *MemRepository
 	Filename string
 	Producer *Producer
 }
@@ -210,8 +210,8 @@ func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close file rep
-func (r FileRepository) CloseConnect() {
-
+func (r FileRepository) CloseConn() {
+	r.Producer.file.Close()
 }
 
 // UsersCount()

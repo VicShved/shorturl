@@ -105,6 +105,6 @@ func ServerRun(config app.ServerConfigStruct) {
 
 	// Shutdown gracefully
 	<-idleChan
-	repo.CloseConnect()
+	repo.CloseConn()
 	logger.Log.Info("Server Shutdown gracefully")
 }

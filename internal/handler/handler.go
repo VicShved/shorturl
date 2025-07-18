@@ -354,10 +354,8 @@ func (h Handler) DelUserURLs(w http.ResponseWriter, r *http.Request) {
 // @Summary Статистика
 // @Description Запрос возвратит количество сокращенных URL и пользователей сервиса
 // @ID GetStats
-// @Accept  -
 // @Produce json
-// @Param -
-// @Success 200
+// @Success 200 {object} service.Stats
 // @Failure 403
 // @Failure 500
 // @Security TRUSTED_SUBNET

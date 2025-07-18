@@ -8,20 +8,20 @@ func GetStorage() (*map[string]string, *map[string]*map[string]string) {
 	return &storage, &userStorage
 }
 
-// MemRepiository struct
-type MemRepiository struct {
+// MemRepository struct
+type MemRepository struct {
 	mp      *map[string]string
 	userMap *map[string]*map[string]string
 }
 
 // GetMemRepository() *MemRepiository
-func GetMemRepository() *MemRepiository {
+func GetMemRepository() *MemRepository {
 	memstorage, userStorage := GetStorage()
-	return &MemRepiository{mp: memstorage, userMap: userStorage}
+	return &MemRepository{mp: memstorage, userMap: userStorage}
 }
 
 // Save(key string, value string, userID string)
-func (s MemRepiository) Save(key string, value string, userID string) error {
+func (s MemRepository) Save(key string, value string, userID string) error {
 	(*s.mp)[key] = value
 	urlMap, ok := (*s.userMap)[userID]
 	if !ok {
@@ -34,7 +34,7 @@ func (s MemRepiository) Save(key string, value string, userID string) error {
 }
 
 // Read(key string, userID string)
-func (s MemRepiository) Read(key string, userID string) (string, bool, bool) {
+func (s MemRepository) Read(key string, userID string) (string, bool, bool) {
 	result, ok := (*s.mp)[key]
 	// urlMap, ok := (*s.userMap)[userID]
 	// if !ok {
@@ -45,7 +45,7 @@ func (s MemRepiository) Read(key string, userID string) (string, bool, bool) {
 }
 
 // ReadWithUser(key string, userID string)
-func (s MemRepiository) ReadWithUser(key string, userID string) (string, bool, bool) {
+func (s MemRepository) ReadWithUser(key string, userID string) (string, bool, bool) {
 	urlMap, ok := (*s.userMap)[userID]
 	if !ok {
 		return "", ok, false
@@ -55,17 +55,17 @@ func (s MemRepiository) ReadWithUser(key string, userID string) (string, bool, b
 }
 
 // Len()
-func (s MemRepiository) Len() int {
+func (s MemRepository) Len() int {
 	return len(*s.mp)
 }
 
 // Ping()
-func (s MemRepiository) Ping() error {
+func (s MemRepository) Ping() error {
 	return nil
 }
 
 // SaveBatch(data *[]KeyLongURLStr, userID string)
-func (s MemRepiository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
+func (s MemRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
 		err := s.Save(element.Key, element.LongURL, userID)
 		if err != nil {
@@ -76,7 +76,7 @@ func (s MemRepiository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 }
 
 // GetUserUrls(userID string)
-func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
+func (s MemRepository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 	var results []KeyOriginalURL
 	uMap, ok := (*s.userMap)[userID]
 	if !ok {
@@ -89,21 +89,21 @@ func (s MemRepiository) GetUserUrls(userID string) (*[]KeyOriginalURL, error) {
 }
 
 // DelUserUrls(shortURLs *[]string, userID string)
-func (s MemRepiository) DelUserUrls(shortURLs *[]string, userID string) error {
+func (s MemRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 	return nil // TODO need realizaion
 }
 
 // Close memrep
-func (s MemRepiository) CloseConnect() {
+func (s MemRepository) CloseConn() {
 	return
 }
 
 // UsersCount()
-func (r MemRepiository) UsersCount() (int, error) {
+func (r MemRepository) UsersCount() (int, error) {
 	return 0, nil
 }
 
 // UrlsCount
-func (r MemRepiository) UrlsCount() (int, error) {
+func (r MemRepository) UrlsCount() (int, error) {
 	return 0, nil
 }
