@@ -304,7 +304,7 @@ func BenchmarkGet(b *testing.B) {
 	}
 }
 
-func TestisInSubNet(t *testing.T) {
+func TestIsInSubNet(t *testing.T) {
 
 	var tests = []struct {
 		address string
