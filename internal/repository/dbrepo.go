@@ -120,7 +120,7 @@ func (r DBRepository) Ping() error {
 }
 
 // Batch(data *[]KeyLongURLStr)
-func (r DBRepository) Batch(data *[]KeyLongURLStr) error {
+func (r DBRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -152,6 +152,16 @@ func (r DBRepository) DeleteUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close db connection
-func (r DBRepository) Close() {
+func (r DBRepository) CloseConnect() {
 	r.db.Close()
+}
+
+// UsersCount()
+func (r DBRepository) UsersCount() (int, error) {
+	return 0, nil
+}
+
+// UrlsCount
+func (r DBRepository) UrlsCount() (int, error) {
+	return 0, nil
 }
