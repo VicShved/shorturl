@@ -3,6 +3,8 @@ package server
 
 import (
 	"context"
+	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -16,30 +18,55 @@ import (
 	"github.com/VicShved/shorturl/internal/repository"
 	"github.com/VicShved/shorturl/internal/service"
 	"github.com/go-chi/chi/v5"
+	"github.com/soheilhy/cmux"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/acme/autocert"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
 )
 
 // Server struct
 type Server struct {
+	address    string
 	hTTPServer *http.Server
+	gRPCServer *grpc.Server
 }
 
 // Init Server(serverAddress string, router *chi.Mux)
 func (s *Server) Init(serverAddress string, router *chi.Mux) {
-
+	s.address = serverAddress
 	s.hTTPServer = &http.Server{
-		Addr:    serverAddress,
 		Handler: router,
 	}
 }
 
 // Run(serverAddress string, router *chi.Mux)
 func (s *Server) Run(enableHTTPS bool) error {
-	if enableHTTPS {
-		return s.hTTPServer.Serve(autocert.NewListener(s.hTTPServer.Addr))
+	// Create the listener
+	listener, err := net.Listen("tcp", s.address)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return s.hTTPServer.ListenAndServe()
+
+	mux := cmux.New(listener)
+	httpListener := mux.Match(cmux.Any())
+
+	g := errgroup.Group{}
+
+	g.Go(func() error {
+		if enableHTTPS {
+			return s.hTTPServer.Serve(autocert.NewListener(s.hTTPServer.Addr))
+		}
+		return s.hTTPServer.Serve(httpListener)
+		// return s.hTTPServer.ListenAndServe()
+	})
+
+	g.Go(func() error {
+		return mux.Serve()
+	})
+
+	err = g.Wait()
+	return err
 }
 
 // ServerRun (config app.ServerConfigStruct)
@@ -65,7 +92,7 @@ func ServerRun(config app.ServerConfigStruct) {
 	// Bussiness layer (empty)
 	serv := service.GetService(repo, config.BaseURL)
 	// Handlers
-	handler := handler.GetHandler(serv)
+	handler := handler.GetHandler(serv, config.TrustedSubnet)
 
 	// Middlewares chain
 	middlewares := []func(http.Handler) http.Handler{
@@ -105,6 +132,6 @@ func ServerRun(config app.ServerConfigStruct) {
 
 	// Shutdown gracefully
 	<-idleChan
-	repo.Close()
+	repo.CloseConn()
 	logger.Log.Info("Server Shutdown gracefully")
 }
