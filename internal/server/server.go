@@ -30,6 +30,7 @@ type Server struct {
 	address    string
 	hTTPServer *http.Server
 	gRPCServer *grpc.Server
+	mux        cmux.CMux
 }
 
 // Init Server(serverAddress string, router *chi.Mux)
@@ -38,6 +39,7 @@ func (s *Server) Init(serverAddress string, router *chi.Mux) {
 	s.hTTPServer = &http.Server{
 		Handler: router,
 	}
+	s.gRPCServer = grpc.NewServer()
 }
 
 // Run(serverAddress string, router *chi.Mux)
@@ -48,24 +50,29 @@ func (s *Server) Run(enableHTTPS bool) error {
 		log.Fatal(err)
 	}
 
-	mux := cmux.New(listener)
-	httpListener := mux.Match(cmux.Any())
+	s.mux = cmux.New(listener)
+	grpcListener := s.mux.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
+	httpListener := s.mux.Match(cmux.Any())
 
-	g := errgroup.Group{}
-
-	g.Go(func() error {
+	grp := errgroup.Group{}
+	// run grpc server
+	grp.Go(func() error {
+		return s.gRPCServer.Serve(grpcListener)
+	})
+	// run http server
+	grp.Go(func() error {
 		if enableHTTPS {
 			return s.hTTPServer.Serve(autocert.NewListener(s.hTTPServer.Addr))
 		}
 		return s.hTTPServer.Serve(httpListener)
 		// return s.hTTPServer.ListenAndServe()
 	})
-
-	g.Go(func() error {
-		return mux.Serve()
+	// run cmux multiplexer
+	grp.Go(func() error {
+		return s.mux.Serve()
 	})
-
-	err = g.Wait()
+	// wait group
+	err = grp.Wait()
 	return err
 }
 
@@ -108,7 +115,7 @@ func ServerRun(config app.ServerConfigStruct) {
 	server.Init(config.ServerAddress, router)
 
 	idleChan := make(chan string)
-	exitChan := make(chan os.Signal, 10)
+	exitChan := make(chan os.Signal, 3)
 	signal.Notify(exitChan, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
 	go func() {
@@ -116,10 +123,25 @@ func ServerRun(config app.ServerConfigStruct) {
 		logger.Log.Info("Catch syscall sygnal")
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
+
 		// Shutdown
-		if err := server.hTTPServer.Shutdown(ctx); err != nil {
-			logger.Log.Error("Server shuntdown: %v", zap.Error(err))
+		grp := errgroup.Group{}
+		grp.Go(func() error {
+			server.mux.Close()
+			return nil
+		})
+		grp.Go(func() error {
+			return server.hTTPServer.Shutdown(ctx)
+		})
+		grp.Go(func() error {
+			server.gRPCServer.GracefulStop()
+			return nil
+		})
+
+		if err := grp.Wait(); err != nil {
+			logger.Log.Error("Servers shuntdown: %v", zap.Error(err))
 		}
+
 		logger.Log.Info("Send message for shutdown gracefully")
 		close(idleChan)
 	}()
