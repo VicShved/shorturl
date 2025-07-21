@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package gserver;
+
+option go_package = "gserver/proto";
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    string url = 1;
+}
+
+service Shortener {
+    rpc Get(GetRequest) returns (GetResponse);
+}

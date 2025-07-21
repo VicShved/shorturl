@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/VicShved/shorturl/internal/app"
+	"github.com/VicShved/shorturl/internal/gserver"
 	"github.com/VicShved/shorturl/internal/handler"
 	"github.com/VicShved/shorturl/internal/logger"
 	"github.com/VicShved/shorturl/internal/middware"
@@ -34,12 +35,13 @@ type Server struct {
 }
 
 // Init Server(serverAddress string, router *chi.Mux)
-func (s *Server) Init(serverAddress string, router *chi.Mux) {
+func (s *Server) Init(serverAddress string, router *chi.Mux, serv *service.ShortenService) {
 	s.address = serverAddress
 	s.hTTPServer = &http.Server{
 		Handler: router,
 	}
-	s.gRPCServer = grpc.NewServer()
+	s.gRPCServer, _ = gserver.GetServer(serv)
+
 }
 
 // Run(serverAddress string, router *chi.Mux)
@@ -49,7 +51,7 @@ func (s *Server) Run(enableHTTPS bool) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	// create multiplexer & listenerts
 	s.mux = cmux.New(listener)
 	grpcListener := s.mux.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
 	httpListener := s.mux.Match(cmux.Any())
@@ -112,7 +114,7 @@ func ServerRun(config app.ServerConfigStruct) {
 	router := handler.InitRouter(middlewares)
 	// Create server
 	server := new(Server)
-	server.Init(config.ServerAddress, router)
+	server.Init(config.ServerAddress, router, serv)
 
 	idleChan := make(chan string)
 	exitChan := make(chan os.Signal, 3)

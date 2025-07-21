@@ -1,0 +1,7 @@
+proto < ./gserver.proto
+
+###
+GRPC localhost:8080/Shortener/Get
+{
+    "key": "2411122339"
+}
