@@ -21,6 +21,42 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type Empty struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Empty) Reset() {
+	*x = Empty{}
+	mi := &file_proto_gserver_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Empty) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Empty) ProtoMessage() {}
+
+func (x *Empty) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Empty.ProtoReflect.Descriptor instead.
+func (*Empty) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{0}
+}
+
 type GetRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Key           string                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
@@ -30,7 +66,7 @@ type GetRequest struct {
 
 func (x *GetRequest) Reset() {
 	*x = GetRequest{}
-	mi := &file_proto_gserver_proto_msgTypes[0]
+	mi := &file_proto_gserver_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +78,7 @@ func (x *GetRequest) String() string {
 func (*GetRequest) ProtoMessage() {}
 
 func (x *GetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_gserver_proto_msgTypes[0]
+	mi := &file_proto_gserver_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +91,7 @@ func (x *GetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRequest.ProtoReflect.Descriptor instead.
 func (*GetRequest) Descriptor() ([]byte, []int) {
-	return file_proto_gserver_proto_rawDescGZIP(), []int{0}
+	return file_proto_gserver_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetRequest) GetKey() string {
@@ -74,7 +110,7 @@ type GetResponse struct {
 
 func (x *GetResponse) Reset() {
 	*x = GetResponse{}
-	mi := &file_proto_gserver_proto_msgTypes[1]
+	mi := &file_proto_gserver_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -86,7 +122,7 @@ func (x *GetResponse) String() string {
 func (*GetResponse) ProtoMessage() {}
 
 func (x *GetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_gserver_proto_msgTypes[1]
+	mi := &file_proto_gserver_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -99,7 +135,7 @@ func (x *GetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetResponse.ProtoReflect.Descriptor instead.
 func (*GetResponse) Descriptor() ([]byte, []int) {
-	return file_proto_gserver_proto_rawDescGZIP(), []int{1}
+	return file_proto_gserver_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetResponse) GetUrl() string {
@@ -109,18 +145,364 @@ func (x *GetResponse) GetUrl() string {
 	return ""
 }
 
+type PostRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostRequest) Reset() {
+	*x = PostRequest{}
+	mi := &file_proto_gserver_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostRequest) ProtoMessage() {}
+
+func (x *PostRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostRequest.ProtoReflect.Descriptor instead.
+func (*PostRequest) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *PostRequest) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+type PostResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Result        string                 `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostResponse) Reset() {
+	*x = PostResponse{}
+	mi := &file_proto_gserver_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostResponse) ProtoMessage() {}
+
+func (x *PostResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostResponse.ProtoReflect.Descriptor instead.
+func (*PostResponse) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *PostResponse) GetResult() string {
+	if x != nil {
+		return x.Result
+	}
+	return ""
+}
+
+type BatchRequestElement struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CorrelationId string                 `protobuf:"bytes,1,opt,name=correlationId,proto3" json:"correlationId,omitempty"`
+	OriginalUrl   string                 `protobuf:"bytes,2,opt,name=originalUrl,proto3" json:"originalUrl,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchRequestElement) Reset() {
+	*x = BatchRequestElement{}
+	mi := &file_proto_gserver_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchRequestElement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchRequestElement) ProtoMessage() {}
+
+func (x *BatchRequestElement) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchRequestElement.ProtoReflect.Descriptor instead.
+func (*BatchRequestElement) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *BatchRequestElement) GetCorrelationId() string {
+	if x != nil {
+		return x.CorrelationId
+	}
+	return ""
+}
+
+func (x *BatchRequestElement) GetOriginalUrl() string {
+	if x != nil {
+		return x.OriginalUrl
+	}
+	return ""
+}
+
+type BatchRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Data          []*BatchRequestElement `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchRequest) Reset() {
+	*x = BatchRequest{}
+	mi := &file_proto_gserver_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchRequest) ProtoMessage() {}
+
+func (x *BatchRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchRequest.ProtoReflect.Descriptor instead.
+func (*BatchRequest) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *BatchRequest) GetData() []*BatchRequestElement {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type BatchResponseElement struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CorrelationId string                 `protobuf:"bytes,1,opt,name=correlationId,proto3" json:"correlationId,omitempty"`
+	ShortUrl      string                 `protobuf:"bytes,2,opt,name=shortUrl,proto3" json:"shortUrl,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchResponseElement) Reset() {
+	*x = BatchResponseElement{}
+	mi := &file_proto_gserver_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchResponseElement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchResponseElement) ProtoMessage() {}
+
+func (x *BatchResponseElement) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchResponseElement.ProtoReflect.Descriptor instead.
+func (*BatchResponseElement) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *BatchResponseElement) GetCorrelationId() string {
+	if x != nil {
+		return x.CorrelationId
+	}
+	return ""
+}
+
+func (x *BatchResponseElement) GetShortUrl() string {
+	if x != nil {
+		return x.ShortUrl
+	}
+	return ""
+}
+
+type BatchResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Data          []*BatchResponseElement `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchResponse) Reset() {
+	*x = BatchResponse{}
+	mi := &file_proto_gserver_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchResponse) ProtoMessage() {}
+
+func (x *BatchResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchResponse.ProtoReflect.Descriptor instead.
+func (*BatchResponse) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *BatchResponse) GetData() []*BatchResponseElement {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type TestRepeated struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Strings       []string               `protobuf:"bytes,1,rep,name=strings,proto3" json:"strings,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TestRepeated) Reset() {
+	*x = TestRepeated{}
+	mi := &file_proto_gserver_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TestRepeated) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestRepeated) ProtoMessage() {}
+
+func (x *TestRepeated) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestRepeated.ProtoReflect.Descriptor instead.
+func (*TestRepeated) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *TestRepeated) GetStrings() []string {
+	if x != nil {
+		return x.Strings
+	}
+	return nil
+}
+
 var File_proto_gserver_proto protoreflect.FileDescriptor
 
 const file_proto_gserver_proto_rawDesc = "" +
 	"\n" +
-	"\x13proto/gserver.proto\x12\agserver\"\x1e\n" +
+	"\x13proto/gserver.proto\x12\agserver\"\a\n" +
+	"\x05Empty\"\x1e\n" +
 	"\n" +
 	"GetRequest\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\"\x1f\n" +
 	"\vGetResponse\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url2=\n" +
-	"\tShortener\x120\n" +
-	"\x03Get\x12\x13.gserver.GetRequest\x1a\x14.gserver.GetResponseB\x0fZ\rgserver/protob\x06proto3"
+	"\x03url\x18\x01 \x01(\tR\x03url\"\x1f\n" +
+	"\vPostRequest\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\"&\n" +
+	"\fPostResponse\x12\x16\n" +
+	"\x06result\x18\x01 \x01(\tR\x06result\"]\n" +
+	"\x13BatchRequestElement\x12$\n" +
+	"\rcorrelationId\x18\x01 \x01(\tR\rcorrelationId\x12 \n" +
+	"\voriginalUrl\x18\x02 \x01(\tR\voriginalUrl\"@\n" +
+	"\fBatchRequest\x120\n" +
+	"\x04data\x18\x01 \x03(\v2\x1c.gserver.BatchRequestElementR\x04data\"X\n" +
+	"\x14BatchResponseElement\x12$\n" +
+	"\rcorrelationId\x18\x01 \x01(\tR\rcorrelationId\x12\x1a\n" +
+	"\bshortUrl\x18\x02 \x01(\tR\bshortUrl\"B\n" +
+	"\rBatchResponse\x121\n" +
+	"\x04data\x18\x01 \x03(\v2\x1d.gserver.BatchResponseElementR\x04data\"(\n" +
+	"\fTestRepeated\x12\x18\n" +
+	"\astrings\x18\x01 \x03(\tR\astrings2\xc3\x02\n" +
+	"\x10ShortenerService\x120\n" +
+	"\x03Get\x12\x13.gserver.GetRequest\x1a\x14.gserver.GetResponse\x123\n" +
+	"\x04Post\x12\x14.gserver.PostRequest\x1a\x15.gserver.PostResponse\x12(\n" +
+	"\x06PingDB\x12\x0e.gserver.Empty\x1a\x0e.gserver.Empty\x126\n" +
+	"\x05Batch\x12\x15.gserver.BatchRequest\x1a\x16.gserver.BatchResponse\x12-\n" +
+	"\x04Test\x12\x15.gserver.TestRepeated\x1a\x0e.gserver.Empty\x127\n" +
+	"\aTestOne\x12\x1c.gserver.BatchRequestElement\x1a\x0e.gserver.EmptyB\x0fZ\rgserver/protob\x06proto3"
 
 var (
 	file_proto_gserver_proto_rawDescOnce sync.Once
@@ -134,19 +516,39 @@ func file_proto_gserver_proto_rawDescGZIP() []byte {
 	return file_proto_gserver_proto_rawDescData
 }
 
-var file_proto_gserver_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_gserver_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_proto_gserver_proto_goTypes = []any{
-	(*GetRequest)(nil),  // 0: gserver.GetRequest
-	(*GetResponse)(nil), // 1: gserver.GetResponse
+	(*Empty)(nil),                // 0: gserver.Empty
+	(*GetRequest)(nil),           // 1: gserver.GetRequest
+	(*GetResponse)(nil),          // 2: gserver.GetResponse
+	(*PostRequest)(nil),          // 3: gserver.PostRequest
+	(*PostResponse)(nil),         // 4: gserver.PostResponse
+	(*BatchRequestElement)(nil),  // 5: gserver.BatchRequestElement
+	(*BatchRequest)(nil),         // 6: gserver.BatchRequest
+	(*BatchResponseElement)(nil), // 7: gserver.BatchResponseElement
+	(*BatchResponse)(nil),        // 8: gserver.BatchResponse
+	(*TestRepeated)(nil),         // 9: gserver.TestRepeated
 }
 var file_proto_gserver_proto_depIdxs = []int32{
-	0, // 0: gserver.Shortener.Get:input_type -> gserver.GetRequest
-	1, // 1: gserver.Shortener.Get:output_type -> gserver.GetResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	5, // 0: gserver.BatchRequest.data:type_name -> gserver.BatchRequestElement
+	7, // 1: gserver.BatchResponse.data:type_name -> gserver.BatchResponseElement
+	1, // 2: gserver.ShortenerService.Get:input_type -> gserver.GetRequest
+	3, // 3: gserver.ShortenerService.Post:input_type -> gserver.PostRequest
+	0, // 4: gserver.ShortenerService.PingDB:input_type -> gserver.Empty
+	6, // 5: gserver.ShortenerService.Batch:input_type -> gserver.BatchRequest
+	9, // 6: gserver.ShortenerService.Test:input_type -> gserver.TestRepeated
+	5, // 7: gserver.ShortenerService.TestOne:input_type -> gserver.BatchRequestElement
+	2, // 8: gserver.ShortenerService.Get:output_type -> gserver.GetResponse
+	4, // 9: gserver.ShortenerService.Post:output_type -> gserver.PostResponse
+	0, // 10: gserver.ShortenerService.PingDB:output_type -> gserver.Empty
+	8, // 11: gserver.ShortenerService.Batch:output_type -> gserver.BatchResponse
+	0, // 12: gserver.ShortenerService.Test:output_type -> gserver.Empty
+	0, // 13: gserver.ShortenerService.TestOne:output_type -> gserver.Empty
+	8, // [8:14] is the sub-list for method output_type
+	2, // [2:8] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_gserver_proto_init() }
@@ -160,7 +562,7 @@ func file_proto_gserver_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_gserver_proto_rawDesc), len(file_proto_gserver_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

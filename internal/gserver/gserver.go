@@ -8,13 +8,13 @@ import (
 
 // GServer
 type GServer struct {
-	pb.UnimplementedShortenerServer
+	pb.UnimplementedShortenerServiceServer
 	serv *service.ShortenService
 }
 
 func GetServer(serv *service.ShortenService) (*grpc.Server, error) {
-	server := grpc.NewServer()
+	server := grpc.NewServer(grpc.ChainUnaryInterceptor(authUnaryInterceptor))
 	gServer := GServer{serv: serv}
-	pb.RegisterShortenerServer(server, &gServer)
+	pb.RegisterShortenerServiceServer(server, &gServer)
 	return server, nil
 }

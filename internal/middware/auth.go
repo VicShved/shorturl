@@ -52,7 +52,8 @@ func setAuthCook(w http.ResponseWriter, userID *string) {
 	})
 }
 
-func parseTokenUserID(tokenStr string) (*jwt.Token, string, error) {
+// ParseTokenUserID парсит jwt из строки
+func ParseTokenUserID(tokenStr string) (*jwt.Token, string, error) {
 	claims := &CustClaims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
 		return []byte(app.ServerConfig.SecretKey), nil
@@ -72,7 +73,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			userID, _ = app.GetNewUUID()
 			setAuthCook(w, &userID)
 		} else {
-			token, userID, _ = parseTokenUserID(cook.Value)
+			token, userID, _ = ParseTokenUserID(cook.Value)
 			// Если токен не валидный,  то создаю нвый userID
 			if !token.Valid {
 				logger.Log.Debug("Not valid token")

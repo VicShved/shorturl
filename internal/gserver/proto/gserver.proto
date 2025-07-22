@@ -4,6 +4,10 @@ package gserver;
 
 option go_package = "gserver/proto";
 
+message Empty {
+
+}
+
 message GetRequest {
     string key = 1;
 }
@@ -12,6 +16,42 @@ message GetResponse {
     string url = 1;
 }
 
-service Shortener {
+message PostRequest {
+    string url = 1;
+}
+
+message PostResponse {
+    string result = 1;
+}
+
+message BatchRequestElement {
+    string correlationId = 1;
+    string originalUrl = 2;
+}
+
+message BatchRequest {
+    repeated BatchRequestElement data = 1;
+}
+
+message BatchResponseElement {
+    string correlationId = 1;
+    string shortUrl = 2;
+}
+
+message BatchResponse {
+    repeated BatchResponseElement data = 1;
+}
+
+message TestRepeated {
+    repeated string strings = 1;
+}
+
+
+service ShortenerService {
     rpc Get(GetRequest) returns (GetResponse);
+    rpc Post(PostRequest) returns (PostResponse);
+    rpc PingDB(Empty) returns (Empty);
+    rpc Batch(BatchRequest) returns (BatchResponse);
+    rpc Test(TestRepeated) returns (Empty);
+    rpc TestOne(BatchRequestElement) returns (Empty);
 }
