@@ -19,12 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ShortenerService_Get_FullMethodName     = "/gserver.ShortenerService/Get"
-	ShortenerService_Post_FullMethodName    = "/gserver.ShortenerService/Post"
-	ShortenerService_PingDB_FullMethodName  = "/gserver.ShortenerService/PingDB"
-	ShortenerService_Batch_FullMethodName   = "/gserver.ShortenerService/Batch"
-	ShortenerService_Test_FullMethodName    = "/gserver.ShortenerService/Test"
-	ShortenerService_TestOne_FullMethodName = "/gserver.ShortenerService/TestOne"
+	ShortenerService_Get_FullMethodName         = "/gserver.ShortenerService/Get"
+	ShortenerService_Post_FullMethodName        = "/gserver.ShortenerService/Post"
+	ShortenerService_PingDB_FullMethodName      = "/gserver.ShortenerService/PingDB"
+	ShortenerService_Batch_FullMethodName       = "/gserver.ShortenerService/Batch"
+	ShortenerService_GetUserURLs_FullMethodName = "/gserver.ShortenerService/GetUserURLs"
+	ShortenerService_DelUserURLs_FullMethodName = "/gserver.ShortenerService/DelUserURLs"
 )
 
 // ShortenerServiceClient is the client API for ShortenerService service.
@@ -35,8 +35,8 @@ type ShortenerServiceClient interface {
 	Post(ctx context.Context, in *PostRequest, opts ...grpc.CallOption) (*PostResponse, error)
 	PingDB(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
 	Batch(ctx context.Context, in *BatchRequest, opts ...grpc.CallOption) (*BatchResponse, error)
-	Test(ctx context.Context, in *TestRepeated, opts ...grpc.CallOption) (*Empty, error)
-	TestOne(ctx context.Context, in *BatchRequestElement, opts ...grpc.CallOption) (*Empty, error)
+	GetUserURLs(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetUserURLsResponse, error)
+	DelUserURLs(ctx context.Context, in *DelUserURLsRequest, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type shortenerServiceClient struct {
@@ -87,20 +87,20 @@ func (c *shortenerServiceClient) Batch(ctx context.Context, in *BatchRequest, op
 	return out, nil
 }
 
-func (c *shortenerServiceClient) Test(ctx context.Context, in *TestRepeated, opts ...grpc.CallOption) (*Empty, error) {
+func (c *shortenerServiceClient) GetUserURLs(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetUserURLsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, ShortenerService_Test_FullMethodName, in, out, cOpts...)
+	out := new(GetUserURLsResponse)
+	err := c.cc.Invoke(ctx, ShortenerService_GetUserURLs_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *shortenerServiceClient) TestOne(ctx context.Context, in *BatchRequestElement, opts ...grpc.CallOption) (*Empty, error) {
+func (c *shortenerServiceClient) DelUserURLs(ctx context.Context, in *DelUserURLsRequest, opts ...grpc.CallOption) (*Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Empty)
-	err := c.cc.Invoke(ctx, ShortenerService_TestOne_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ShortenerService_DelUserURLs_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -115,8 +115,8 @@ type ShortenerServiceServer interface {
 	Post(context.Context, *PostRequest) (*PostResponse, error)
 	PingDB(context.Context, *Empty) (*Empty, error)
 	Batch(context.Context, *BatchRequest) (*BatchResponse, error)
-	Test(context.Context, *TestRepeated) (*Empty, error)
-	TestOne(context.Context, *BatchRequestElement) (*Empty, error)
+	GetUserURLs(context.Context, *Empty) (*GetUserURLsResponse, error)
+	DelUserURLs(context.Context, *DelUserURLsRequest) (*Empty, error)
 	mustEmbedUnimplementedShortenerServiceServer()
 }
 
@@ -139,11 +139,11 @@ func (UnimplementedShortenerServiceServer) PingDB(context.Context, *Empty) (*Emp
 func (UnimplementedShortenerServiceServer) Batch(context.Context, *BatchRequest) (*BatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Batch not implemented")
 }
-func (UnimplementedShortenerServiceServer) Test(context.Context, *TestRepeated) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Test not implemented")
+func (UnimplementedShortenerServiceServer) GetUserURLs(context.Context, *Empty) (*GetUserURLsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserURLs not implemented")
 }
-func (UnimplementedShortenerServiceServer) TestOne(context.Context, *BatchRequestElement) (*Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TestOne not implemented")
+func (UnimplementedShortenerServiceServer) DelUserURLs(context.Context, *DelUserURLsRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DelUserURLs not implemented")
 }
 func (UnimplementedShortenerServiceServer) mustEmbedUnimplementedShortenerServiceServer() {}
 func (UnimplementedShortenerServiceServer) testEmbeddedByValue()                          {}
@@ -238,38 +238,38 @@ func _ShortenerService_Batch_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ShortenerService_Test_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TestRepeated)
+func _ShortenerService_GetUserURLs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ShortenerServiceServer).Test(ctx, in)
+		return srv.(ShortenerServiceServer).GetUserURLs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ShortenerService_Test_FullMethodName,
+		FullMethod: ShortenerService_GetUserURLs_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShortenerServiceServer).Test(ctx, req.(*TestRepeated))
+		return srv.(ShortenerServiceServer).GetUserURLs(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ShortenerService_TestOne_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BatchRequestElement)
+func _ShortenerService_DelUserURLs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DelUserURLsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ShortenerServiceServer).TestOne(ctx, in)
+		return srv.(ShortenerServiceServer).DelUserURLs(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ShortenerService_TestOne_FullMethodName,
+		FullMethod: ShortenerService_DelUserURLs_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ShortenerServiceServer).TestOne(ctx, req.(*BatchRequestElement))
+		return srv.(ShortenerServiceServer).DelUserURLs(ctx, req.(*DelUserURLsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -298,12 +298,12 @@ var ShortenerService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ShortenerService_Batch_Handler,
 		},
 		{
-			MethodName: "Test",
-			Handler:    _ShortenerService_Test_Handler,
+			MethodName: "GetUserURLs",
+			Handler:    _ShortenerService_GetUserURLs_Handler,
 		},
 		{
-			MethodName: "TestOne",
-			Handler:    _ShortenerService_TestOne_Handler,
+			MethodName: "DelUserURLs",
+			Handler:    _ShortenerService_DelUserURLs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

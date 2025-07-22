@@ -46,12 +46,24 @@ message TestRepeated {
     repeated string strings = 1;
 }
 
+message GetUserURLsElement {
+    string shortUrl = 1;
+    string originalUrl = 2;
+}
+
+message GetUserURLsResponse {
+    repeated GetUserURLsElement elements = 1;
+}
+
+message DelUserURLsRequest {
+    repeated string shorts = 1;
+}
 
 service ShortenerService {
     rpc Get(GetRequest) returns (GetResponse);
     rpc Post(PostRequest) returns (PostResponse);
     rpc PingDB(Empty) returns (Empty);
     rpc Batch(BatchRequest) returns (BatchResponse);
-    rpc Test(TestRepeated) returns (Empty);
-    rpc TestOne(BatchRequestElement) returns (Empty);
+    rpc GetUserURLs(Empty) returns (GetUserURLsResponse);
+    rpc DelUserURLs(DelUserURLsRequest) returns (Empty);
 }

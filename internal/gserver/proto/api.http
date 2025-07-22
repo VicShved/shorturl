@@ -21,14 +21,8 @@ GRPC localhost:8080/ShortenerService/Batch
 }
 
 ###
-GRPC localhost:8080/ShortenerService/Test
-{
-"strings":["correlation_id","11","original_url","https://rbce.ru","correlation_id","1","original_url","https://rbcd.ru","correlation_id","2","original_url","https://yad.ru"]
-}
+GRPC localhost:8080/ShortenerService/PingDB
+{}
 
 ###
 GRPC localhost:8080/ShortenerService/TestOne
-{
-    "correlationId":"11",
-    "originalUrl":"https://rbce.ru"
-}

@@ -469,6 +469,146 @@ func (x *TestRepeated) GetStrings() []string {
 	return nil
 }
 
+type GetUserURLsElement struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ShortUrl      string                 `protobuf:"bytes,1,opt,name=shortUrl,proto3" json:"shortUrl,omitempty"`
+	OriginalUrl   string                 `protobuf:"bytes,2,opt,name=originalUrl,proto3" json:"originalUrl,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserURLsElement) Reset() {
+	*x = GetUserURLsElement{}
+	mi := &file_proto_gserver_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserURLsElement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserURLsElement) ProtoMessage() {}
+
+func (x *GetUserURLsElement) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserURLsElement.ProtoReflect.Descriptor instead.
+func (*GetUserURLsElement) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetUserURLsElement) GetShortUrl() string {
+	if x != nil {
+		return x.ShortUrl
+	}
+	return ""
+}
+
+func (x *GetUserURLsElement) GetOriginalUrl() string {
+	if x != nil {
+		return x.OriginalUrl
+	}
+	return ""
+}
+
+type GetUserURLsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Elements      []*GetUserURLsElement  `protobuf:"bytes,1,rep,name=elements,proto3" json:"elements,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserURLsResponse) Reset() {
+	*x = GetUserURLsResponse{}
+	mi := &file_proto_gserver_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserURLsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserURLsResponse) ProtoMessage() {}
+
+func (x *GetUserURLsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserURLsResponse.ProtoReflect.Descriptor instead.
+func (*GetUserURLsResponse) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetUserURLsResponse) GetElements() []*GetUserURLsElement {
+	if x != nil {
+		return x.Elements
+	}
+	return nil
+}
+
+type DelUserURLsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Shorts        []string               `protobuf:"bytes,1,rep,name=shorts,proto3" json:"shorts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DelUserURLsRequest) Reset() {
+	*x = DelUserURLsRequest{}
+	mi := &file_proto_gserver_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DelUserURLsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DelUserURLsRequest) ProtoMessage() {}
+
+func (x *DelUserURLsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_gserver_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DelUserURLsRequest.ProtoReflect.Descriptor instead.
+func (*DelUserURLsRequest) Descriptor() ([]byte, []int) {
+	return file_proto_gserver_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DelUserURLsRequest) GetShorts() []string {
+	if x != nil {
+		return x.Shorts
+	}
+	return nil
+}
+
 var File_proto_gserver_proto protoreflect.FileDescriptor
 
 const file_proto_gserver_proto_rawDesc = "" +
@@ -495,14 +635,21 @@ const file_proto_gserver_proto_rawDesc = "" +
 	"\rBatchResponse\x121\n" +
 	"\x04data\x18\x01 \x03(\v2\x1d.gserver.BatchResponseElementR\x04data\"(\n" +
 	"\fTestRepeated\x12\x18\n" +
-	"\astrings\x18\x01 \x03(\tR\astrings2\xc3\x02\n" +
+	"\astrings\x18\x01 \x03(\tR\astrings\"R\n" +
+	"\x12GetUserURLsElement\x12\x1a\n" +
+	"\bshortUrl\x18\x01 \x01(\tR\bshortUrl\x12 \n" +
+	"\voriginalUrl\x18\x02 \x01(\tR\voriginalUrl\"N\n" +
+	"\x13GetUserURLsResponse\x127\n" +
+	"\belements\x18\x01 \x03(\v2\x1b.gserver.GetUserURLsElementR\belements\",\n" +
+	"\x12DelUserURLsRequest\x12\x16\n" +
+	"\x06shorts\x18\x01 \x03(\tR\x06shorts2\xd4\x02\n" +
 	"\x10ShortenerService\x120\n" +
 	"\x03Get\x12\x13.gserver.GetRequest\x1a\x14.gserver.GetResponse\x123\n" +
 	"\x04Post\x12\x14.gserver.PostRequest\x1a\x15.gserver.PostResponse\x12(\n" +
 	"\x06PingDB\x12\x0e.gserver.Empty\x1a\x0e.gserver.Empty\x126\n" +
-	"\x05Batch\x12\x15.gserver.BatchRequest\x1a\x16.gserver.BatchResponse\x12-\n" +
-	"\x04Test\x12\x15.gserver.TestRepeated\x1a\x0e.gserver.Empty\x127\n" +
-	"\aTestOne\x12\x1c.gserver.BatchRequestElement\x1a\x0e.gserver.EmptyB\x0fZ\rgserver/protob\x06proto3"
+	"\x05Batch\x12\x15.gserver.BatchRequest\x1a\x16.gserver.BatchResponse\x12;\n" +
+	"\vGetUserURLs\x12\x0e.gserver.Empty\x1a\x1c.gserver.GetUserURLsResponse\x12:\n" +
+	"\vDelUserURLs\x12\x1b.gserver.DelUserURLsRequest\x1a\x0e.gserver.EmptyB\x0fZ\rgserver/protob\x06proto3"
 
 var (
 	file_proto_gserver_proto_rawDescOnce sync.Once
@@ -516,7 +663,7 @@ func file_proto_gserver_proto_rawDescGZIP() []byte {
 	return file_proto_gserver_proto_rawDescData
 }
 
-var file_proto_gserver_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_proto_gserver_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_proto_gserver_proto_goTypes = []any{
 	(*Empty)(nil),                // 0: gserver.Empty
 	(*GetRequest)(nil),           // 1: gserver.GetRequest
@@ -528,27 +675,31 @@ var file_proto_gserver_proto_goTypes = []any{
 	(*BatchResponseElement)(nil), // 7: gserver.BatchResponseElement
 	(*BatchResponse)(nil),        // 8: gserver.BatchResponse
 	(*TestRepeated)(nil),         // 9: gserver.TestRepeated
+	(*GetUserURLsElement)(nil),   // 10: gserver.GetUserURLsElement
+	(*GetUserURLsResponse)(nil),  // 11: gserver.GetUserURLsResponse
+	(*DelUserURLsRequest)(nil),   // 12: gserver.DelUserURLsRequest
 }
 var file_proto_gserver_proto_depIdxs = []int32{
-	5, // 0: gserver.BatchRequest.data:type_name -> gserver.BatchRequestElement
-	7, // 1: gserver.BatchResponse.data:type_name -> gserver.BatchResponseElement
-	1, // 2: gserver.ShortenerService.Get:input_type -> gserver.GetRequest
-	3, // 3: gserver.ShortenerService.Post:input_type -> gserver.PostRequest
-	0, // 4: gserver.ShortenerService.PingDB:input_type -> gserver.Empty
-	6, // 5: gserver.ShortenerService.Batch:input_type -> gserver.BatchRequest
-	9, // 6: gserver.ShortenerService.Test:input_type -> gserver.TestRepeated
-	5, // 7: gserver.ShortenerService.TestOne:input_type -> gserver.BatchRequestElement
-	2, // 8: gserver.ShortenerService.Get:output_type -> gserver.GetResponse
-	4, // 9: gserver.ShortenerService.Post:output_type -> gserver.PostResponse
-	0, // 10: gserver.ShortenerService.PingDB:output_type -> gserver.Empty
-	8, // 11: gserver.ShortenerService.Batch:output_type -> gserver.BatchResponse
-	0, // 12: gserver.ShortenerService.Test:output_type -> gserver.Empty
-	0, // 13: gserver.ShortenerService.TestOne:output_type -> gserver.Empty
-	8, // [8:14] is the sub-list for method output_type
-	2, // [2:8] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	5,  // 0: gserver.BatchRequest.data:type_name -> gserver.BatchRequestElement
+	7,  // 1: gserver.BatchResponse.data:type_name -> gserver.BatchResponseElement
+	10, // 2: gserver.GetUserURLsResponse.elements:type_name -> gserver.GetUserURLsElement
+	1,  // 3: gserver.ShortenerService.Get:input_type -> gserver.GetRequest
+	3,  // 4: gserver.ShortenerService.Post:input_type -> gserver.PostRequest
+	0,  // 5: gserver.ShortenerService.PingDB:input_type -> gserver.Empty
+	6,  // 6: gserver.ShortenerService.Batch:input_type -> gserver.BatchRequest
+	0,  // 7: gserver.ShortenerService.GetUserURLs:input_type -> gserver.Empty
+	12, // 8: gserver.ShortenerService.DelUserURLs:input_type -> gserver.DelUserURLsRequest
+	2,  // 9: gserver.ShortenerService.Get:output_type -> gserver.GetResponse
+	4,  // 10: gserver.ShortenerService.Post:output_type -> gserver.PostResponse
+	0,  // 11: gserver.ShortenerService.PingDB:output_type -> gserver.Empty
+	8,  // 12: gserver.ShortenerService.Batch:output_type -> gserver.BatchResponse
+	11, // 13: gserver.ShortenerService.GetUserURLs:output_type -> gserver.GetUserURLsResponse
+	0,  // 14: gserver.ShortenerService.DelUserURLs:output_type -> gserver.Empty
+	9,  // [9:15] is the sub-list for method output_type
+	3,  // [3:9] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_gserver_proto_init() }
@@ -562,7 +713,7 @@ func file_proto_gserver_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_gserver_proto_rawDesc), len(file_proto_gserver_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

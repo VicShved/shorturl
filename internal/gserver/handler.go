@@ -98,12 +98,48 @@ func (s *GServer) Batch(ctx context.Context, in *pb.BatchRequest) (*pb.BatchResp
 	return &response, nil
 }
 
-func (s *GServer) Test(ctx context.Context, in *pb.TestRepeated) (*pb.Empty, error) {
-	logger.Log.Debug("Test", zap.Any("in", in.GetStrings()))
+func (s *GServer) PingDB(ctx context.Context, in *pb.Empty) (*pb.Empty, error) {
+	err := s.serv.Ping()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "БД недоступна")
+	}
 	return nil, nil
 }
 
-func (s *GServer) TestOne(ctx context.Context, in *pb.BatchRequestElement) (*pb.Empty, error) {
-	logger.Log.Debug("Test", zap.Any("in", in))
+func convert2GetUserURLsElements(in []service.UserURLRespJSON) []*pb.GetUserURLsElement {
+	results := make([]*pb.GetUserURLsElement, len(in))
+	for i, source := range in {
+		element := new(pb.GetUserURLsElement)
+		element.ShortUrl = source.ShortURL
+		element.OriginalUrl = source.OriginalURL
+		results[i] = element
+	}
+	return results
+}
+
+func (s *GServer) GetUserURLs(ctx context.Context, in *pb.Empty) (*pb.GetUserURLsResponse, error) {
+	var response pb.GetUserURLsResponse
+	userID := getUserID(ctx)
+	outdata, err := s.serv.GetUserURLs(userID)
+	if err != nil {
+		logger.Log.Error(err.Error())
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	if len(*outdata) == 0 {
+		return nil, status.Errorf(codes.NotFound, "Записи отсутствуют")
+	}
+	response.Elements = convert2GetUserURLsElements(*outdata)
+	return &response, nil
+}
+
+func (s *GServer) DelUserURLs(ctx context.Context, in *pb.DelUserURLsRequest) (*pb.Empty, error) {
+	userID := getUserID(ctx)
+	shorts := in.GetShorts()
+	err := s.serv.DelUserURLs(&shorts, userID)
+	if err != nil {
+		logger.Log.Error(err.Error())
+		return nil, status.Errorf(codes.Internal, "Ошибка сервера")
+	}
 	return nil, nil
 }
