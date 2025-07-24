@@ -97,6 +97,9 @@ func post(tokenStr string, url string) (*pb.PostResponse, error) {
 }
 func TestPost(t *testing.T) {
 	tokenStr, err := getAuthToken()
+	if err != nil {
+		log.Print(err)
+	}
 	response, err := post(tokenStr, "https://pract.org")
 	if err != nil {
 		log.Print(err)
@@ -120,8 +123,8 @@ func get(tokenStr string, shortUrl string) (*pb.GetResponse, error) {
 
 func TestGet(t *testing.T) {
 	url := "https://pract.org"
-	tokenStr, err := getAuthToken()
-	postResponse, err := post(tokenStr, url)
+	tokenStr, _ := getAuthToken()
+	postResponse, _ := post(tokenStr, url)
 	respUrl := postResponse.GetResult()
 	splits := strings.Split(respUrl, "/")
 	response, err := get(tokenStr, splits[1])
