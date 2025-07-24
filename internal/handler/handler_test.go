@@ -59,7 +59,7 @@ func TestPost(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
-	handlers := GetHandler(serv)
+	handlers := GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -125,7 +125,7 @@ func TestGet(t *testing.T) {
 
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, "")
-	handlers := GetHandler(serv)
+	handlers := GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -201,7 +201,7 @@ func TestPostJSON(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
-	handlers := GetHandler(serv)
+	handlers := GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -276,7 +276,7 @@ func BenchmarkGet(b *testing.B) {
 
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, "")
-	handlers := GetHandler(serv)
+	handlers := GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for i := 0; i < b.N; i++ {
@@ -301,5 +301,53 @@ func BenchmarkGet(b *testing.B) {
 			res.Body.Close()
 
 		}
+	}
+}
+
+func TestIsInSubNet(t *testing.T) {
+
+	var tests = []struct {
+		address string
+		cidr    string
+		want    bool
+	}{
+		{
+			address: "192.168.0.1",
+			cidr:    "192.168.0.1/28",
+			want:    true,
+		},
+		{
+			address: "192.168.0.4",
+			cidr:    "192.168.0.1/28",
+			want:    true,
+		},
+		{
+			address: "192.168.1.4",
+			cidr:    "192.168.0.1/28",
+			want:    false,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "192.168.0.1/28",
+			want:    false,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "192.168.0.1/24",
+			want:    true,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "",
+			want:    false,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "192.168.0.128",
+			want:    false,
+		},
+	}
+	for _, test := range tests {
+		assert.Equal(t, isInSubNet(test.address, test.cidr), test.want)
 	}
 }

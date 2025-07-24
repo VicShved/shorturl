@@ -125,6 +125,35 @@
                 }
             }
         },
+        "/api/internal/stats": {
+            "get": {
+                "security": [
+                    {
+                        "TRUSTED_SUBNET": []
+                    }
+                ],
+                "description": "Запрос возвратит количество сокращенных URL и пользователей сервиса",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "api/internal"
+                ],
+                "summary": "Статистика",
+                "operationId": "GetStats",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/api/shorten": {
             "post": {
                 "security": [

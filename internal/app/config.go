@@ -17,6 +17,7 @@ type ServerConfigStruct struct {
 	LogLevel        string
 	EnableHTTPS     bool `json:"enable_https"`
 	ConfigFileName  string
+	TrustedSubnet   string `json:"trusted_subnet"`
 }
 
 // var ServerConfig
@@ -30,6 +31,7 @@ func getConfigArgsEnvVars() *ServerConfigStruct {
 	flag.StringVar(&ServerConfig.DBDSN, "d", "", "DataBase DSN")
 	flag.StringVar(&ServerConfig.SecretKey, "k", "VeryImpotantSecretKey.YesYes", "Secret key")
 	flag.StringVar(&ServerConfig.LogLevel, "l", "INFO", "Log level")
+	flag.StringVar(&ServerConfig.TrustedSubnet, "t", "", "Trusted subnet")
 	flag.Parse()
 
 	value, exists := os.LookupEnv("SERVER_ADDRESS")
@@ -60,6 +62,11 @@ func getConfigArgsEnvVars() *ServerConfigStruct {
 	value, exists = os.LookupEnv("LOG_LEVEL")
 	if exists {
 		ServerConfig.LogLevel = value
+	}
+
+	value, exists = os.LookupEnv("TRUSTED_SUBNET")
+	if exists {
+		ServerConfig.TrustedSubnet = value
 	}
 
 	return &ServerConfig
