@@ -317,9 +317,24 @@ func TestIsInSubNet(t *testing.T) {
 			want:    true,
 		},
 		{
+			address: "192.168.0.4",
+			cidr:    "192.168.0.1/28",
+			want:    true,
+		},
+		{
+			address: "192.168.1.4",
+			cidr:    "192.168.0.1/28",
+			want:    false,
+		},
+		{
 			address: "192.168.0.255",
 			cidr:    "192.168.0.1/28",
 			want:    false,
+		},
+		{
+			address: "192.168.0.255",
+			cidr:    "192.168.0.1/24",
+			want:    true,
 		},
 		{
 			address: "192.168.0.255",

@@ -20,20 +20,12 @@ func getNewUserIDToken() (string, string) {
 	return userID, token
 }
 
-func addTokenStrOutgoingContextMd(ctx context.Context, tokenStr string) context.Context {
-	outMd, exists := metadata.FromOutgoingContext(ctx)
-	if !exists {
-		outMd = metadata.MD{}
-	}
-	outMd.Set(middware.AuthorizationCookName, tokenStr)
-	return metadata.NewOutgoingContext(ctx, outMd)
-}
-
 func authUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	logger.Log.Debug("In authUnaryInterceptor")
 	var userID string
 	var token *jwt.Token
 	var tokenStr string
+	var err error
 	md, exists := metadata.FromIncomingContext(ctx)
 	if !exists {
 		logger.Log.Warn("authUnaryInterceptor hasnt metadata")
@@ -41,15 +33,16 @@ func authUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.Unary
 	tokens := md.Get(middware.AuthorizationCookName)
 	if len(tokens) == 0 {
 		userID, tokenStr = getNewUserIDToken()
-		ctx = addTokenStrOutgoingContextMd(ctx, tokenStr)
 	}
 	if len(tokens) > 0 {
-		token, userID, _ = middware.ParseTokenUserID(tokens[0])
+		token, userID, err = middware.ParseTokenUserID(tokens[0])
+		if err != nil {
+			return nil, status.Errorf(codes.PermissionDenied, "Доступ запрещен")
+		}
 		// Если токен не валидный,  то создаю нвый userID
 		if !token.Valid {
 			logger.Log.Warn("Not valid token")
 			userID, tokenStr = getNewUserIDToken()
-			ctx = addTokenStrOutgoingContextMd(ctx, tokenStr)
 		}
 	}
 	// Если кука не содержит ид пользователя, то возвращаю 401
@@ -58,7 +51,12 @@ func authUnaryInterceptor(ctx context.Context, req interface{}, info *grpc.Unary
 		return nil, status.Errorf(codes.PermissionDenied, "Доступ запрещен")
 	}
 	md.Set("userID", userID)
+	md.Set(middware.AuthorizationCookName, tokenStr)
 	newCtx := metadata.NewIncomingContext(ctx, md)
+
 	logger.Log.Debug("Exit from authUnaryInterceptor", zap.String("token:", tokenStr))
+	authHeader := metadata.Pairs(middware.AuthorizationCookName, tokenStr)
+	_ = grpc.SetHeader(newCtx, authHeader)
 	return handler(newCtx, req)
+
 }

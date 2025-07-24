@@ -3,6 +3,7 @@ package gserver
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	pb "github.com/VicShved/shorturl/internal/gserver/proto"
 	"github.com/VicShved/shorturl/internal/logger"
@@ -27,12 +28,13 @@ func getUserID(ctx context.Context) string {
 // Get реализует получение длинного адреса из короткого ключа (хеша)
 func (s *GServer) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, error) {
 	var response pb.GetResponse
-
 	logger.Log.Debug("Get ", zap.Any("In", in))
 	userID := getUserID(ctx)
+	fmt.Println("UserID ", userID)
 	logger.Log.Debug("(s *GServer) Get(", zap.String("userID", userID))
 	url, exists, isDeleted := s.serv.Read(in.Key, userID)
-	if exists {
+	if !exists {
+		fmt.Println("Нет такого ключа у пользователя")
 		return nil, status.Errorf(codes.NotFound, "Нет такого ключа у пользователя %s", userID)
 	}
 	if isDeleted {
