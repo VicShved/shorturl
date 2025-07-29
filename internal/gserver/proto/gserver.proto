@@ -1,0 +1,69 @@
+syntax = "proto3";
+
+package gserver;
+
+option go_package = "gserver/proto";
+
+message Empty {
+
+}
+
+message GetRequest {
+    string key = 1;
+}
+
+message GetResponse {
+    string url = 1;
+}
+
+message PostRequest {
+    string url = 1;
+}
+
+message PostResponse {
+    string result = 1;
+}
+
+message BatchRequestElement {
+    string correlationId = 1;
+    string originalUrl = 2;
+}
+
+message BatchRequest {
+    repeated BatchRequestElement data = 1;
+}
+
+message BatchResponseElement {
+    string correlationId = 1;
+    string shortUrl = 2;
+}
+
+message BatchResponse {
+    repeated BatchResponseElement data = 1;
+}
+
+message TestRepeated {
+    repeated string strings = 1;
+}
+
+message GetUserURLsElement {
+    string shortUrl = 1;
+    string originalUrl = 2;
+}
+
+message GetUserURLsResponse {
+    repeated GetUserURLsElement elements = 1;
+}
+
+message DelUserURLsRequest {
+    repeated string shorts = 1;
+}
+
+service ShortenerService {
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Post(PostRequest) returns (PostResponse);
+    rpc PingDB(Empty) returns (Empty);
+    rpc Batch(BatchRequest) returns (BatchResponse);
+    rpc GetUserURLs(Empty) returns (GetUserURLsResponse);
+    rpc DelUserURLs(DelUserURLsRequest) returns (Empty);
+}

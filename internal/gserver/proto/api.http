@@ -1,0 +1,28 @@
+proto < ./gserver.proto
+
+###
+GRPC localhost:8080/ShortenerService/Get
+@Authorization eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJiNWU1NDZhYi04ZTg4LTMzOGItODI3YS01YjFmODk0NmQyMzUifQ.yRGtGvzcUzX7p60FmdQ0TzJtU67WQnHJ7NK2mx8aa62wYr4lLrCTMYHf0m5SK3fNed1wi8crVtzNJ3UptIFJIA
+{
+    "key": "1806126526"
+}
+
+###
+# @Authorization eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJiNWU1NDZhYi04ZTg4LTMzOGItODI3YS01YjFmODk0NmQyMzUifQ.yRGtGvzcUzX7p60FmdQ0TzJtU67WQnHJ7NK2mx8aa62wYr4lLrCTMYHf0m5SK3fNed1wi8crVtzNJ3UptIFJIA
+GRPC localhost:8080/ShortenerService/Post
+{
+    "url": "https://rbc.ru"
+}
+
+###
+GRPC localhost:8080/ShortenerService/Batch
+{
+"data":[{"correlationId":"11","originalUrl":"https://rbce.ru"},{"correlationId":"1","originalUrl":"https://rbcd.ru"},{"correlationId":"2","originalUrl":"https://yad.ru"}]
+}
+
+###
+GRPC localhost:8080/ShortenerService/PingDB
+{}
+
+###
+GRPC localhost:8080/ShortenerService/TestOne

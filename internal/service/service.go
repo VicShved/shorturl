@@ -31,6 +31,12 @@ type ShortenService struct {
 	baseurl string
 }
 
+// Stats статистика
+type Stats struct {
+	UrlsCount  int `json:"urls"`
+	UsersCount int `json:"users"`
+}
+
 // Save(key string, value string, userID string)
 func (s *ShortenService) Save(key string, value string, userID string) error {
 	return s.repo.Save(key, value, userID)
@@ -51,12 +57,12 @@ func (s *ShortenService) Len() int {
 	return s.repo.Len()
 }
 
-// Batch(indata *[]BatchReqJSON, userID string)
-func (s *ShortenService) Batch(indata *[]BatchReqJSON, userID string) ([]BatchRespJSON, error) {
+// Batch(data *[]BatchReqJSON, userID string)
+func (s *ShortenService) Batch(data *[]BatchReqJSON, userID string) ([]BatchRespJSON, error) {
 	var results []BatchRespJSON
 	var repodata []repository.KeyLongURLStr
 	// Prepare results & data for repo
-	for _, element := range *indata {
+	for _, element := range *data {
 		shorturl, key := s.GetShortURLFromLong(&element.OriginalURL)
 		res := BatchRespJSON{
 			CorrelationID: element.CorrelationID,
@@ -68,7 +74,7 @@ func (s *ShortenService) Batch(indata *[]BatchReqJSON, userID string) ([]BatchRe
 	}
 
 	// batch on repo layer
-	err := s.repo.Batch(&repodata, userID)
+	err := s.repo.SaveBatch(&repodata, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -111,4 +117,21 @@ func (s *ShortenService) GetShortURLFromLong(longURL *string) (*string, *string)
 // GetService(repo repository.RepoInterface, baseurl string)
 func GetService(repo repository.RepoInterface, baseurl string) *ShortenService {
 	return &ShortenService{repo: repo, baseurl: baseurl}
+}
+
+// GetStats()
+func (s *ShortenService) GetStats() (Stats, error) {
+	result := Stats{}
+	usersCount, err := s.repo.CountUsers()
+	if err != nil {
+		return result, err
+	}
+	result.UsersCount = usersCount
+
+	urlsCount, err := s.repo.CountUrls()
+	if err != nil {
+		return result, err
+	}
+	result.UrlsCount = urlsCount
+	return result, nil
 }
