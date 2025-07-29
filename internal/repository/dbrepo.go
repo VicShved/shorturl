@@ -156,12 +156,12 @@ func (r DBRepository) CloseConnect() {
 	r.db.Close()
 }
 
-// UsersCount()
-func (r DBRepository) UsersCount() (int, error) {
+// CountUsers
+func (r DBRepository) CountUsers() (int, error) {
 	return 0, nil
 }
 
-// UrlsCount
-func (r DBRepository) UrlsCount() (int, error) {
+// CountUrls
+func (r DBRepository) CountUrls() (int, error) {
 	return 0, nil
 }

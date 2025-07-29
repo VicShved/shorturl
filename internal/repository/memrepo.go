@@ -97,12 +97,12 @@ func (s MemRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 func (s MemRepository) CloseConn() {
 }
 
-// UsersCount()
-func (s MemRepository) UsersCount() (int, error) {
+// CountUsers
+func (s MemRepository) CountUsers() (int, error) {
 	return 0, nil
 }
 
-// UrlsCount
-func (s MemRepository) UrlsCount() (int, error) {
+// CountUrls
+func (s MemRepository) CountUrls() (int, error) {
 	return 0, nil
 }

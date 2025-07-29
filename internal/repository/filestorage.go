@@ -215,12 +215,12 @@ func (r FileRepository) CloseConn() {
 	r.sr.CloseConn()
 }
 
-// UsersCount()
-func (r FileRepository) UsersCount() (int, error) {
+// CountUsers()
+func (r FileRepository) CountUsers() (int, error) {
 	return 0, nil
 }
 
-// UrlsCount
-func (r FileRepository) UrlsCount() (int, error) {
+// CountUrls
+func (r FileRepository) CountUrls() (int, error) {
 	return 0, nil
 }

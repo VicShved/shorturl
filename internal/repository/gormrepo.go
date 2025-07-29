@@ -192,8 +192,8 @@ func (r GormRepository) CloseConn() {
 	sqlDB.Close()
 }
 
-// UsersCount()
-func (r GormRepository) UsersCount() (int, error) {
+// CountUsers()
+func (r GormRepository) CountUsers() (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	var count int64
@@ -204,8 +204,8 @@ func (r GormRepository) UsersCount() (int, error) {
 	return int(count), nil
 }
 
-// UrlsCount
-func (r GormRepository) UrlsCount() (int, error) {
+// CountUrls
+func (r GormRepository) CountUrls() (int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	var count int64

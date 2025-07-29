@@ -122,13 +122,13 @@ func GetService(repo repository.RepoInterface, baseurl string) *ShortenService {
 // GetStats()
 func (s *ShortenService) GetStats() (Stats, error) {
 	result := Stats{}
-	usersCount, err := s.repo.UsersCount()
+	usersCount, err := s.repo.CountUsers()
 	if err != nil {
 		return result, err
 	}
 	result.UsersCount = usersCount
 
-	urlsCount, err := s.repo.UrlsCount()
+	urlsCount, err := s.repo.CountUrls()
 	if err != nil {
 		return result, err
 	}

@@ -20,8 +20,8 @@ type RepoInterface interface {
 	GetUserUrls(userID string) (*[]KeyOriginalURL, error)
 	DelUserUrls(shortURLs *[]string, userID string) error
 	CloseConn()
-	UrlsCount() (int, error)
-	UsersCount() (int, error)
+	CountUrls() (int, error)
+	CountUsers() (int, error)
 }
 
 // ErrPKConflict
