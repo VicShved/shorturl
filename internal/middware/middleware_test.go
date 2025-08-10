@@ -12,7 +12,7 @@ func TestAuth(t *testing.T) {
 	assert.Nil(t, err)
 	token, err := GetJWTTokenString(&userID)
 	assert.Nil(t, err)
-	_, resultUserID, err := parseTokenUserID(token)
+	_, resultUserID, err := ParseTokenUserID(token)
 	assert.Nil(t, err)
 	assert.Equal(t, userID, resultUserID)
 }

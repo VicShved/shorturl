@@ -111,6 +111,24 @@ paths:
       summary: Сохранение url
       tags:
       - ""
+  /api/internal/stats:
+    get:
+      description: Запрос возвратит количество сокращенных URL и пользователей сервиса
+      operationId: GetStats
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+        "500":
+          description: Internal Server Error
+      security:
+      - TRUSTED_SUBNET: []
+      summary: Статистика
+      tags:
+      - api/internal
   /api/shorten:
     post:
       consumes:

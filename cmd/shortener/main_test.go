@@ -60,7 +60,7 @@ func TestPost(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
-	handlers := handler.GetHandler(serv)
+	handlers := handler.GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -125,7 +125,7 @@ func TestGet(t *testing.T) {
 
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, "")
-	handlers := handler.GetHandler(serv)
+	handlers := handler.GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {
@@ -201,7 +201,7 @@ func TestPostJSON(t *testing.T) {
 	baseurl := app.ServerConfig.BaseURL
 	repo := repository.GetFileRepository(app.ServerConfig.FileStoragePath)
 	serv := service.GetService(repo, baseurl)
-	handlers := handler.GetHandler(serv)
+	handlers := handler.GetHandler(serv, app.ServerConfig.TrustedSubnet)
 	user, _ := app.GetNewUUID()
 
 	for _, test := range tests {

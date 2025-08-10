@@ -115,8 +115,8 @@ func (r GormRepository) Ping() error {
 	return sqlDB.Ping()
 }
 
-// Batch(data *[]KeyLongURLStr, userID string)
-func (r GormRepository) Batch(data *[]KeyLongURLStr, userID string) error {
+// SaveBatch(data *[]KeyLongURLStr, userID string)
+func (r GormRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	var rows []KeyOriginalURL
 	for _, element := range *data {
 		rows = append(rows, KeyOriginalURL{Key: element.Key, Original: element.LongURL, UserID: userID})
@@ -187,7 +187,31 @@ func (r GormRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close connection
-func (r GormRepository) Close() {
+func (r GormRepository) CloseConn() {
 	sqlDB, _ := r.DB.DB()
 	sqlDB.Close()
+}
+
+// CountUsers()
+func (r GormRepository) CountUsers() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	var count int64
+	result := r.DB.WithContext(ctx).Model(&KeyOriginalURL{}).Distinct("UserID").Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(count), nil
+}
+
+// CountUrls
+func (r GormRepository) CountUrls() (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	var count int64
+	result := r.DB.WithContext(ctx).Model(&KeyOriginalURL{}).Distinct("Key").Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(count), nil
 }

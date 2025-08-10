@@ -105,7 +105,7 @@ func (p *Producer) WriteElement(elem *Element) error {
 
 // FileRepository struct
 type FileRepository struct {
-	sr       *MemRepiository
+	sr       *MemRepository
 	Filename string
 	Producer *Producer
 }
@@ -163,8 +163,8 @@ func (r FileRepository) Len() int {
 	return r.sr.Len()
 }
 
-// Batch(data *[]KeyLongURLStr, userID string)
-func (r FileRepository) Batch(data *[]KeyLongURLStr, userID string) error {
+// SaveBatch(data *[]KeyLongURLStr, userID string)
+func (r FileRepository) SaveBatch(data *[]KeyLongURLStr, userID string) error {
 	for _, element := range *data {
 		err := r.Save(element.Key, element.LongURL, userID)
 		if err != nil {
@@ -210,6 +210,17 @@ func (r FileRepository) DelUserUrls(shortURLs *[]string, userID string) error {
 }
 
 // Close file rep
-func (r FileRepository) Close() {
+func (r FileRepository) CloseConn() {
+	r.Producer.file.Close()
+	r.sr.CloseConn()
+}
 
+// CountUsers()
+func (r FileRepository) CountUsers() (int, error) {
+	return 0, nil
+}
+
+// CountUrls
+func (r FileRepository) CountUrls() (int, error) {
+	return 0, nil
 }
